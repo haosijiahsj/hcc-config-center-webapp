@@ -89,6 +89,7 @@
         <div class="page-class">
           <el-pagination
             small
+            background
             @size-change="sizeChange"
             @current-change="currentChange"
             :current-page="queryResult.page"

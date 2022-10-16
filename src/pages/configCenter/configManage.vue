@@ -56,6 +56,7 @@
           <div class="page-class">
             <el-pagination
               small
+              background
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
               current-page="1"
@@ -89,6 +90,7 @@
           <div class="page-class">
             <el-pagination
               small
+              background
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
               current-page="1"
