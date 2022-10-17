@@ -38,9 +38,9 @@
           <el-table-column prop="secretKey" label="密钥" width="260"> </el-table-column>
           <el-table-column prop="appStatus" label="状态">
             <template slot-scope="scope">
-              <el-tag v-if="scope.row.appStatus == 'ONLINE'" type="success" size="mini">上线</el-tag>
-              <el-tag v-if="scope.row.appStatus == 'OFFLINE'" type="danger" size="mini">下线</el-tag>
-              <el-tag v-if="scope.row.appStatus == 'NOT_ONLINE'" type="info" size="mini">未上线</el-tag>
+              <el-tag v-if="scope.row.appStatus == 'ONLINE'" type="success" size="mini">scope.row.appStatusDesc</el-tag>
+              <el-tag v-if="scope.row.appStatus == 'OFFLINE'" type="danger" size="mini">scope.row.appStatusDesc</el-tag>
+              <el-tag v-if="scope.row.appStatus == 'NOT_ONLINE'" type="info" size="mini">scope.row.appStatusDesc</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="owner" label="负责人"> </el-table-column>

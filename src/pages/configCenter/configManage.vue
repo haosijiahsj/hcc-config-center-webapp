@@ -50,6 +50,8 @@
             <el-table-column prop="key" label="配置key"> </el-table-column>
             <el-table-column prop="value" label="值"> </el-table-column>
             <el-table-column prop="comment" label="注释"> </el-table-column>
+            <el-table-column prop="createTime" label="创建时间"> </el-table-column>
+            <el-table-column prop="updateTime" label="更新时间"> </el-table-column>
             <el-table-column prop="operate" width="150" label="操作">
             </el-table-column>
           </el-table>
@@ -85,6 +87,8 @@
             <el-table-column prop="value" label="值"> </el-table-column>
             <el-table-column prop="comment" label="注释"> </el-table-column>
             <el-table-column prop="version" label="版本"> </el-table-column>
+            <el-table-column prop="createTime" label="创建时间"> </el-table-column>
+            <el-table-column prop="updateTime" label="更新时间"> </el-table-column>
             <el-table-column prop="operate" label="操作"> </el-table-column>
           </el-table>
           <div class="page-class">
