@@ -31,18 +31,18 @@
       </div>
       <el-descriptions title="" size="mini">
         <el-descriptions-item label="应用编码">
-          {{appInfo.appCode ? appInfo.appCode : '-'}}
-          <el-button v-if="appInfo.appCode" type="text" @click="copy(appInfo.appCode)" size="mini" >复制</el-button>
+          {{appInfo.appCode ? appInfo.appCode : '-'}}&nbsp;&nbsp;
+          <el-link v-if="appInfo.secretKey" :underline="false" type="primary" @click="copy(appInfo.appCode)">复制</el-link>
         </el-descriptions-item>
         <el-descriptions-item label="应用名称">{{appInfo.appName ? appInfo.appName : '-'}}</el-descriptions-item>
         <el-descriptions-item label="状态">
           <span v-if="!appInfo.appStatus">-</span>
-          <el-tag v-else-if="appInfo.appStatus == 'ONLINE'" type="success" size="mini">scope.row.appStatusDesc</el-tag>
-          <el-tag v-else-if="appInfo.appStatus == 'OFFLINE'" type="danger" size="mini">scope.row.appStatusDesc</el-tag>
+          <el-tag v-else-if="appInfo.appStatus == 'ONLINE'" type="success" size="mini">{{appInfo.appStatusDesc}}</el-tag>
+          <el-tag v-else-if="appInfo.appStatus == 'OFFLINE'" type="danger" size="mini">{{appInfo.appStatusDesc}}</el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="密钥">
-          {{appInfo.secretKey ? appInfo.secretKey : '-'}}
-          <el-button v-if="appInfo.secretKey" type="text" @click="copy(appInfo.secretKey)" size="mini" >复制</el-button>
+          {{appInfo.secretKey ? appInfo.secretKey : '-'}}&nbsp;&nbsp;
+          <el-link v-if="appInfo.secretKey" :underline="false" type="primary" @click="copy(appInfo.secretKey)">复制</el-link>
         </el-descriptions-item>
         <el-descriptions-item label="负责人">{{appInfo.owner ? appInfo.owner : '-'}}</el-descriptions-item>
       </el-descriptions>
@@ -51,7 +51,7 @@
       <div slot="header">
         <span>配置信息</span>
       </div>
-      <el-tabs v-model="activeName">
+      <el-tabs v-model="activeName" @tab-click="tabClick">
         <el-tab-pane label="静态配置" name="staticConfig">
           <div style="text-align: right;">
             <el-button size="mini" @click="saveConfig">新增</el-button>
@@ -168,10 +168,10 @@
             <el-input v-model="saveForm.key" autocomplete="off" :disabled="saveForm.id != null"></el-input>
           </el-form-item>
           <el-form-item label="值" label-width="120px">
-            <el-input v-model="saveForm.value" autocomplete="off"></el-input>
+            <el-input v-model="saveForm.value" type="textarea" :autosize="{ minRows: 2, maxRows: 6}" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="注释" label-width="120px">
-            <el-input v-model="saveForm.comment" autocomplete="off"></el-input>
+            <el-input v-model="saveForm.comment" type="textarea" :autosize="{ minRows: 2, maxRows: 6}" autocomplete="off"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer">
@@ -190,11 +190,14 @@ import ajax from "~/api/ajax";
 export default {
   data() {
     return {
+      staticLoading: false,
+      dynamicLoading: false,
       activeName: "staticConfig",
       saveDialogVisible: false,
       saveFormTitle: "新增静态配置",
       allAppInfos: [],
       appInfo: {
+        id: null,
         appCode: null,
         appName: null,
         appStatus: null,
@@ -282,6 +285,11 @@ export default {
       this.dynamicQueryPage.page = current;
       this.queryAppConfig();
     },
+    tabClick() {
+      if (this.queryForm.applicationId) {
+        this.queryAppConfig();
+      }
+    },
     query() {
       let that = this;
       // 查询app信息
@@ -293,14 +301,14 @@ export default {
         }
       });
       if (that.activeName == "staticConfig") {
-        that.queryAppConfig(false);
+        that.queryAppConfig();
       } else {
-        that.queryAppConfig(true);
+        that.queryAppConfig();
       }      
     },
     saveConfig() {
       this.saveForm = {};
-      if (that.activeName == "staticConfig") {
+      if (this.activeName == "staticConfig") {
         this.saveFormTitle = "新增静态配置";
       } else {
         this.saveFormTitle = "新增动态配置";
@@ -309,7 +317,7 @@ export default {
     },
     saveOrUpdateConfig() {
       let that = this;
-      that.saveForm.applicationId = that.appInfo.applicationId;
+      that.saveForm.applicationId = that.appInfo.id;
       if (that.activeName == "staticConfig") {
         that.saveForm.dynamic = false;
       } else {
@@ -325,9 +333,9 @@ export default {
         }
       });
     },
-    eidtConfig(row) {
+    editConfig(row) {
       this.saveForm = row;
-      if (that.activeName == "staticConfig") {
+      if (this.activeName == "staticConfig") {
         this.saveFormTitle = "编辑静态配置";
       } else {
         this.saveFormTitle = "编辑动态配置";
@@ -369,7 +377,18 @@ export default {
         });
     },
     copy(value) {
-      
+      var that = this;
+      this.$copyText(value).then(
+        function (e) {
+          that.$message({
+            message: '已复制',
+            type: 'success'
+          });
+        },
+        function (e) {
+          that.$message.error('复制失败');
+        }
+      );
     }
   }
 };
