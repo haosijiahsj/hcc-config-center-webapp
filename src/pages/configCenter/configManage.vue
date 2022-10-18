@@ -30,9 +30,20 @@
         <span>应用信息</span>
       </div>
       <el-descriptions title="" size="mini">
-        <el-descriptions-item label="应用编码">{{appInfo.appCode ? appInfo.appCode : '-'}}</el-descriptions-item>
+        <el-descriptions-item label="应用编码">
+          {{appInfo.appCode ? appInfo.appCode : '-'}}
+          <el-button v-if="appInfo.appCode" type="text" @click="copy(appInfo.appCode)" size="mini" >复制</el-button>
+        </el-descriptions-item>
         <el-descriptions-item label="应用名称">{{appInfo.appName ? appInfo.appName : '-'}}</el-descriptions-item>
-        <el-descriptions-item label="密钥">{{appInfo.secretKey ? appInfo.secretKey : '-'}}</el-descriptions-item>
+        <el-descriptions-item label="状态">
+          <span v-if="!appInfo.appStatus">-</span>
+          <el-tag v-else-if="appInfo.appStatus == 'ONLINE'" type="success" size="mini">scope.row.appStatusDesc</el-tag>
+          <el-tag v-else-if="appInfo.appStatus == 'OFFLINE'" type="danger" size="mini">scope.row.appStatusDesc</el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="密钥">
+          {{appInfo.secretKey ? appInfo.secretKey : '-'}}
+          <el-button v-if="appInfo.secretKey" type="text" @click="copy(appInfo.secretKey)" size="mini" >复制</el-button>
+        </el-descriptions-item>
         <el-descriptions-item label="负责人">{{appInfo.owner ? appInfo.owner : '-'}}</el-descriptions-item>
       </el-descriptions>
     </el-card>
@@ -43,7 +54,7 @@
       <el-tabs v-model="activeName">
         <el-tab-pane label="静态配置" name="staticConfig">
           <div style="text-align: right;">
-            <el-button size="mini">新增</el-button>
+            <el-button size="mini" @click="saveConfig">新增</el-button>
             <el-button size="mini">导入</el-button>
             <el-button size="mini">导出</el-button>
           </div>
@@ -93,7 +104,7 @@
         </el-tab-pane>
         <el-tab-pane label="动态配置" name="dynamicConfig">
           <div style="text-align: right">
-            <el-button size="mini">新增</el-button>
+            <el-button size="mini" @click="saveConfig">新增</el-button>
             <el-button size="mini">导入</el-button>
             <el-button size="mini">导出</el-button>
           </div>
@@ -150,6 +161,27 @@
         </el-tab-pane>
       </el-tabs>
     </el-card>
+    <div>
+      <el-dialog :title="saveFormTitle" :visible.sync="saveDialogVisible" width="30%">
+        <el-form :model="saveForm" size="mini">
+          <el-form-item label="配置key" label-width="120px">
+            <el-input v-model="saveForm.key" autocomplete="off" :disabled="saveForm.id != null"></el-input>
+          </el-form-item>
+          <el-form-item label="值" label-width="120px">
+            <el-input v-model="saveForm.value" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="注释" label-width="120px">
+            <el-input v-model="saveForm.comment" autocomplete="off"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer">
+          <el-button @click="saveDialogVisible = false" size="mini">取消</el-button>
+          <el-button type="primary" @click="saveOrUpdateConfig" size="mini"
+            >确定</el-button
+          >
+        </div>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -159,12 +191,23 @@ export default {
   data() {
     return {
       activeName: "staticConfig",
+      saveDialogVisible: false,
+      saveFormTitle: "新增静态配置",
       allAppInfos: [],
       appInfo: {
         appCode: null,
         appName: null,
+        appStatus: null,
+        appStatusDesc: null,
         secretKey: null,
         owner: null
+      },
+      saveForm: {
+        applicationId: null,
+        key: null,
+        value: null,
+        comment: null,
+        dynamic: false,
       },
       queryForm: {
         applicationId: null,
@@ -200,19 +243,20 @@ export default {
       });
   },
   methods: {
-    queryAppConfig(dynamic) {
+    queryAppConfig() {
       let that = this;
-      that.queryForm.dynamic = dynamic;
-      if (dynamic) {
-        that.queryForm.page = that.dynamicQueryPage.page;
-        that.queryForm.size = that.dynamicQueryPage.size;
-      } else {
+      if (that.activeName == "staticConfig") {
+        that.queryForm.dynamic = false;
         that.queryForm.page = that.staticQueryPage.page;
         that.queryForm.size = that.staticQueryPage.size;
+      } else {
+        that.queryForm.dynamic = true;
+        that.queryForm.page = that.dynamicQueryPage.page;
+        that.queryForm.size = that.dynamicQueryPage.size;
       }
       ajax.post("/application-config/page", that.queryForm).then((rs) => {
         if (rs.success) {
-          if (dynamic) {
+          if (that.queryForm.dynamic) {
             that.dynamicQueryResult = rs.data;
           } else {
             that.staticQueryResult = rs.data;
@@ -224,19 +268,19 @@ export default {
     },
     staticSizeChange(size) {
       this.staticQueryPage.size = size;
-      this.queryAppConfig(false);
+      this.queryAppConfig();
     },
     staticCurrentChange(current) {
       this.staticQueryPage.page = current;
-      this.queryAppConfig(false);
+      this.queryAppConfig();
     },
     dynamicSizeChange(size) {
       this.dynamicQueryPage.size = size;
-      this.queryAppConfig(true);
+      this.queryAppConfig();
     },
     dynamicCurrentChange(current) {
       this.dynamicQueryPage.page = current;
-      this.queryAppConfig(true);
+      this.queryAppConfig();
     },
     query() {
       let that = this;
@@ -254,9 +298,79 @@ export default {
         that.queryAppConfig(true);
       }      
     },
-    eidtConfig(row) {},
-    deleteConfig(row) {},
-    pushConfig(row) {},
+    saveConfig() {
+      this.saveForm = {};
+      if (that.activeName == "staticConfig") {
+        this.saveFormTitle = "新增静态配置";
+      } else {
+        this.saveFormTitle = "新增动态配置";
+      }
+      this.saveDialogVisible = true;
+    },
+    saveOrUpdateConfig() {
+      let that = this;
+      that.saveForm.applicationId = that.appInfo.applicationId;
+      if (that.activeName == "staticConfig") {
+        that.saveForm.dynamic = false;
+      } else {
+        that.saveForm.dynamic = true;
+      }
+      ajax.post("/application-config/save", that.saveForm).then((rs) => {
+        if (rs.success) {
+          this.$message.success("保存成功");
+          that.saveDialogVisible = false;
+          that.queryAppConfig();
+        } else {
+          this.$message.error("保存失败！错误信息：" + rs.message);
+        }
+      });
+    },
+    eidtConfig(row) {
+      this.saveForm = row;
+      if (that.activeName == "staticConfig") {
+        this.saveFormTitle = "编辑静态配置";
+      } else {
+        this.saveFormTitle = "编辑动态配置";
+      }
+      this.saveDialogVisible = true;
+    },
+    deleteConfig(row) {
+      let that = this;
+      this.$confirm('确定要删除该配置吗?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          ajax.get("/application-config/delete/" + row.id).then((rs) => {
+          if (rs.success) {
+              this.$message.success("删除成功");
+              that.queryAppConfig();
+            } else {
+              this.$message.error("删除失败！错误信息：" + rs.message);
+            }
+          });
+        });
+    },
+    pushConfig(row) {
+      let that = this;
+      this.$confirm('确定要推送该配置吗?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          ajax.get("/application-config/push/" + row.id).then((rs) => {
+          if (rs.success) {
+              this.$message.success("推送成功");
+              that.queryAppConfig();
+            } else {
+              this.$message.error("推送失败！错误信息：" + rs.message);
+            }
+          });
+        });
+    },
+    copy(value) {
+      
+    }
   }
 };
 </script>
