@@ -5,9 +5,9 @@
         <span>查询条件</span>
       </div>
       <div>
-        <el-form :model="queryForm" :inline="true" size="mini">
+        <el-form :model="queryForm" :inline="true" size="small">
           <el-form-item label="应用名称">
-            <el-select v-model="queryForm.applicationId" placeholder="请选择" size="mini">
+            <el-select v-model="queryForm.applicationId" filterable placeholder="请选择">
               <el-option
                 v-for="item in allAppInfos"
                 :key="item.id"
@@ -29,10 +29,12 @@
       <div slot="header">
         <span>应用信息</span>
       </div>
-      <el-descriptions title="" size="mini">
+      <el-descriptions title="" size="small">
         <el-descriptions-item label="应用编码">
           {{appInfo.appCode ? appInfo.appCode : '-'}}&nbsp;&nbsp;
-          <el-link v-if="appInfo.secretKey" :underline="false" type="primary" @click="copy(appInfo.appCode)">复制</el-link>
+          <el-link v-if="appInfo.appCode" :underline="false" type="primary" @click="copy(appInfo.appCode)">
+            <span style="font-size: 12px">复制</span>
+          </el-link>
         </el-descriptions-item>
         <el-descriptions-item label="应用名称">{{appInfo.appName ? appInfo.appName : '-'}}</el-descriptions-item>
         <el-descriptions-item label="状态">
@@ -42,7 +44,9 @@
         </el-descriptions-item>
         <el-descriptions-item label="密钥">
           {{appInfo.secretKey ? appInfo.secretKey : '-'}}&nbsp;&nbsp;
-          <el-link v-if="appInfo.secretKey" :underline="false" type="primary" @click="copy(appInfo.secretKey)">复制</el-link>
+          <el-link v-if="appInfo.secretKey" :underline="false" type="primary" @click="copy(appInfo.secretKey)">
+            <span style="font-size: 12px;">复制</span>
+          </el-link>
         </el-descriptions-item>
         <el-descriptions-item label="负责人">{{appInfo.owner ? appInfo.owner : '-'}}</el-descriptions-item>
       </el-descriptions>
@@ -164,13 +168,13 @@
     <div>
       <el-dialog :title="saveFormTitle" :visible.sync="saveDialogVisible" width="30%">
         <el-form :model="saveForm" size="mini">
-          <el-form-item label="配置key" label-width="120px">
+          <el-form-item label="key" label-width="60px">
             <el-input v-model="saveForm.key" autocomplete="off" :disabled="saveForm.id != null"></el-input>
           </el-form-item>
-          <el-form-item label="值" label-width="120px">
+          <el-form-item label="value" label-width="60px">
             <el-input v-model="saveForm.value" type="textarea" :autosize="{ minRows: 2, maxRows: 6}" autocomplete="off"></el-input>
           </el-form-item>
-          <el-form-item label="注释" label-width="120px">
+          <el-form-item label="注释" label-width="60px">
             <el-input v-model="saveForm.comment" type="textarea" :autosize="{ minRows: 2, maxRows: 6}" autocomplete="off"></el-input>
           </el-form-item>
         </el-form>
@@ -292,14 +296,23 @@ export default {
     },
     query() {
       let that = this;
+      if (!this.queryForm.applicationId) {
+        this.$message.error("请先选择应用！");
+        return;
+      }
       // 查询app信息
+      let queryAppSuccess = true;
       ajax.get("/application/get/" + that.queryForm.applicationId).then((rs) => {
         if (rs.success) {
           that.appInfo = rs.data;
         } else {
-          this.$message.error("查询失败！请稍后再试！");
+          this.$message.error("查询应用失败！错误信息：" + rs.message);
+          queryAppSuccess = false;
         }
       });
+      if (!queryAppSuccess) {
+        return;
+      }
       if (that.activeName == "staticConfig") {
         that.queryAppConfig();
       } else {
@@ -307,6 +320,10 @@ export default {
       }      
     },
     saveConfig() {
+      if (!this.appInfo.id) {
+        this.$message.error("请先查询应用！");
+        return;
+      }
       this.saveForm = {};
       if (this.activeName == "staticConfig") {
         this.saveFormTitle = "新增静态配置";

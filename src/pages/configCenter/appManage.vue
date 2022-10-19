@@ -5,7 +5,7 @@
         <span>查询条件</span>
       </div>
       <div>
-        <el-form :model="queryForm" :inline="true" size="mini">
+        <el-form :model="queryForm" :inline="true" size="small">
           <el-form-item label="应用名称">
             <el-input v-model="queryForm.appName" placeholder="应用名称，支持模糊搜索"></el-input>
           </el-form-item>
@@ -38,9 +38,9 @@
           <el-table-column prop="secretKey" label="密钥" width="260"> </el-table-column>
           <el-table-column prop="appStatus" label="状态">
             <template slot-scope="scope">
-              <el-tag v-if="scope.row.appStatus == 'ONLINE'" type="success" size="mini">scope.row.appStatusDesc</el-tag>
-              <el-tag v-if="scope.row.appStatus == 'OFFLINE'" type="danger" size="mini">scope.row.appStatusDesc</el-tag>
-              <el-tag v-if="scope.row.appStatus == 'NOT_ONLINE'" type="info" size="mini">scope.row.appStatusDesc</el-tag>
+              <el-tag v-if="scope.row.appStatus == 'ONLINE'" type="success" size="mini">{{scope.row.appStatusDesc}}</el-tag>
+              <el-tag v-if="scope.row.appStatus == 'OFFLINE'" type="danger" size="mini">{{scope.row.appStatusDesc}}</el-tag>
+              <el-tag v-if="scope.row.appStatus == 'NOT_ONLINE'" type="info" size="mini">{{scope.row.appStatusDesc}}</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="owner" label="负责人"> </el-table-column>
@@ -105,13 +105,13 @@
     <div>
       <el-dialog :title="saveFormTitle" :visible.sync="saveDialogVisible" width="30%">
         <el-form :model="saveForm" size="mini">
-          <el-form-item label="应用编码" label-width="120px">
+          <el-form-item label="应用编码" label-width="80px">
             <el-input v-model="saveForm.appCode" autocomplete="off" :disabled="saveForm.id != null"></el-input>
           </el-form-item>
-          <el-form-item label="应用名称" label-width="120px">
+          <el-form-item label="应用名称" label-width="80px">
             <el-input v-model="saveForm.appName" autocomplete="off"></el-input>
           </el-form-item>
-          <el-form-item label="负责人" label-width="120px">
+          <el-form-item label="负责人" label-width="80px">
             <el-input v-model="saveForm.owner" autocomplete="off"></el-input>
           </el-form-item>
         </el-form>
