@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // 进行一些全局配置
 // 公共路由(网络请求地址)
-axios.defaults.baseURL = 'http://localhost:8080/config-center';
+axios.defaults.baseURL = 'http://localhost:8088/config-center';
 // 请求响应超时时间
 axios.defaults.timeout = 5000;
 
