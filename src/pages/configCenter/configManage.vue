@@ -133,6 +133,7 @@
                   >编辑</el-button
                 >
                 <el-button
+                  v-if="appInfo.appStatus == 'ONLINE'"
                   type="text"
                   @click="pushConfig(scope.row)"
                   size="mini"

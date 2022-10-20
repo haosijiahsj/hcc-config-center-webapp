@@ -57,6 +57,7 @@
           <el-table-column prop="operate" width="150" label="操作">
             <template slot-scope="scope">
               <el-button
+                v-if="scope.row.appStatus == 'NOT_ONLINE' || scope.row.appStatus == 'OFFLINE'"
                 type="text"
                 @click="editApp(scope.row)"
                 size="mini"
@@ -77,6 +78,7 @@
                 >下线</el-button
               >
               <el-button
+                v-if="scope.row.appStatus == 'NOT_ONLINE' || scope.row.appStatus == 'OFFLINE'"
                 :underline="false"
                 type="text"
                 size="mini"
