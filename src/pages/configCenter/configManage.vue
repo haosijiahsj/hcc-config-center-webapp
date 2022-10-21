@@ -387,7 +387,6 @@ export default {
           ajax.get("/application-config/push/" + row.id).then((rs) => {
           if (rs.success) {
               this.$message.success("推送成功");
-              that.queryAppConfig();
             } else {
               this.$message.error("推送失败！错误信息：" + rs.message);
             }
