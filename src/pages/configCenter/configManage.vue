@@ -29,14 +29,13 @@
       <div slot="header">
         <span>应用信息</span>
       </div>
-      <el-descriptions title="" size="small" column="2">
+      <el-descriptions title="" size="small" column="3">
         <el-descriptions-item label="应用编码">
           {{appInfo.appCode ? appInfo.appCode : '-'}}&nbsp;&nbsp;
           <el-link v-if="appInfo.appCode" :underline="false" type="primary" @click="copy(appInfo.appCode)">
             <span style="font-size: 12px">复制</span>
           </el-link>
         </el-descriptions-item>
-        <el-descriptions-item label="应用名称">{{appInfo.appName ? appInfo.appName : '-'}}</el-descriptions-item>
         <el-descriptions-item label="密钥">
           {{appInfo.secretKey ? appInfo.secretKey : '-'}}&nbsp;&nbsp;
           <el-link v-if="appInfo.secretKey" :underline="false" type="primary" @click="copy(appInfo.secretKey)">
@@ -48,6 +47,7 @@
           <el-tag v-else-if="appInfo.appStatus == 'ONLINE'" type="success" size="mini">{{appInfo.appStatusDesc}}</el-tag>
           <el-tag v-else-if="appInfo.appStatus == 'OFFLINE'" type="danger" size="mini">{{appInfo.appStatusDesc}}</el-tag>
         </el-descriptions-item>
+        <el-descriptions-item label="应用名称">{{appInfo.appName ? appInfo.appName : '-'}}</el-descriptions-item>
         <el-descriptions-item label="模式">
           <span v-if="!appInfo.appMode">-</span>
           <el-tag v-else-if="appInfo.appMode == 'PUSH'" type="success" size="mini">{{appInfo.appModeDesc}}</el-tag>
