@@ -43,6 +43,12 @@
               <el-tag v-if="scope.row.appStatus == 'NOT_ONLINE'" type="info" size="mini">{{scope.row.appStatusDesc}}</el-tag>
             </template>
           </el-table-column>
+          <el-table-column prop="appMode" label="模式">
+            <template slot-scope="scope">
+              <el-tag v-if="scope.row.appMode == 'PUSH'" type="success" size="mini">{{scope.row.appModeDesc}}</el-tag>
+              <el-tag v-if="scope.row.appMode == 'PULL'" size="mini">{{scope.row.appModeDesc}}</el-tag>
+            </template>
+          </el-table-column>
           <el-table-column prop="owner" label="负责人"> </el-table-column>
           <el-table-column
             prop="createTime"
@@ -113,6 +119,12 @@
           <el-form-item label="应用名称" label-width="80px">
             <el-input v-model="saveForm.appName" autocomplete="off"></el-input>
           </el-form-item>
+          <el-form-item label="应用模式" label-width="80px">
+            <el-radio-group v-model="saveForm.appMode" size="small">
+              <el-radio label="PUSH" border>服务端推送</el-radio>
+              <el-radio label="PULL" border>客户端拉取</el-radio>
+            </el-radio-group>
+          </el-form-item>
           <el-form-item label="负责人" label-width="80px">
             <el-input v-model="saveForm.owner" autocomplete="off"></el-input>
           </el-form-item>
@@ -152,8 +164,9 @@ export default {
         id: null,
         appCode: null,
         appName: null,
+        appMode: 'PUSH',
         owner: null
-      }
+      },
     }
   },
   mounted() {

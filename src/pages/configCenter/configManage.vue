@@ -48,6 +48,11 @@
             <span style="font-size: 12px;">复制</span>
           </el-link>
         </el-descriptions-item>
+        <el-descriptions-item label="模式">
+          <span v-if="!appInfo.appMode">-</span>
+          <el-tag v-else-if="appInfo.appMode == 'PUSH'" type="success" size="mini">{{appInfo.appModeDesc}}</el-tag>
+          <el-tag v-else-if="appInfo.appMode == 'PULL'" size="mini">{{appInfo.appModeDesc}}</el-tag>
+        </el-descriptions-item>
         <el-descriptions-item label="负责人">{{appInfo.owner ? appInfo.owner : '-'}}</el-descriptions-item>
       </el-descriptions>
     </el-card>
@@ -133,7 +138,7 @@
                   >编辑</el-button
                 >
                 <el-button
-                  v-if="appInfo.appStatus == 'ONLINE'"
+                  v-if="appInfo.appStatus == 'ONLINE' && appInfo.appMode == 'PUSH'"
                   type="text"
                   @click="pushConfig(scope.row)"
                   size="mini"
