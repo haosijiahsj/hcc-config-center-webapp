@@ -111,7 +111,7 @@
       </el-card>
     </div>
     <div>
-      <el-dialog :title="saveFormTitle" :visible.sync="saveDialogVisible" width="30%">
+      <el-dialog :title="saveFormTitle" :visible.sync="saveDialogVisible" width="30%" :close-on-click-modal="false">
         <el-form :model="saveForm" size="mini">
           <el-form-item label="应用编码" label-width="80px">
             <el-input v-model="saveForm.appCode" autocomplete="off" :disabled="saveForm.id != null"></el-input>

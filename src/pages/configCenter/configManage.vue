@@ -29,7 +29,7 @@
       <div slot="header">
         <span>应用信息</span>
       </div>
-      <el-descriptions title="" size="small">
+      <el-descriptions title="" size="small" column="2">
         <el-descriptions-item label="应用编码">
           {{appInfo.appCode ? appInfo.appCode : '-'}}&nbsp;&nbsp;
           <el-link v-if="appInfo.appCode" :underline="false" type="primary" @click="copy(appInfo.appCode)">
@@ -37,23 +37,23 @@
           </el-link>
         </el-descriptions-item>
         <el-descriptions-item label="应用名称">{{appInfo.appName ? appInfo.appName : '-'}}</el-descriptions-item>
-        <el-descriptions-item label="状态">
-          <span v-if="!appInfo.appStatus">-</span>
-          <el-tag v-else-if="appInfo.appStatus == 'ONLINE'" type="success" size="mini">{{appInfo.appStatusDesc}}</el-tag>
-          <el-tag v-else-if="appInfo.appStatus == 'OFFLINE'" type="danger" size="mini">{{appInfo.appStatusDesc}}</el-tag>
-        </el-descriptions-item>
         <el-descriptions-item label="密钥">
           {{appInfo.secretKey ? appInfo.secretKey : '-'}}&nbsp;&nbsp;
           <el-link v-if="appInfo.secretKey" :underline="false" type="primary" @click="copy(appInfo.secretKey)">
             <span style="font-size: 12px;">复制</span>
           </el-link>
         </el-descriptions-item>
+        <el-descriptions-item label="状态">
+          <span v-if="!appInfo.appStatus">-</span>
+          <el-tag v-else-if="appInfo.appStatus == 'ONLINE'" type="success" size="mini">{{appInfo.appStatusDesc}}</el-tag>
+          <el-tag v-else-if="appInfo.appStatus == 'OFFLINE'" type="danger" size="mini">{{appInfo.appStatusDesc}}</el-tag>
+        </el-descriptions-item>
         <el-descriptions-item label="模式">
           <span v-if="!appInfo.appMode">-</span>
           <el-tag v-else-if="appInfo.appMode == 'PUSH'" type="success" size="mini">{{appInfo.appModeDesc}}</el-tag>
           <el-tag v-else-if="appInfo.appMode == 'PULL'" size="mini">{{appInfo.appModeDesc}}</el-tag>
         </el-descriptions-item>
-        <el-descriptions-item label="负责人">{{appInfo.owner ? appInfo.owner : '-'}}</el-descriptions-item>
+        <!-- <el-descriptions-item label="负责人">{{appInfo.owner ? appInfo.owner : '-'}}</el-descriptions-item> -->
       </el-descriptions>
     </el-card>
     <el-card shadow="hover">
@@ -73,7 +73,7 @@
             size="mini"
             :border="true"
           >
-            <el-table-column prop="key" label="配置key"> </el-table-column>
+            <el-table-column prop="key" label="配置key" width="200"> </el-table-column>
             <el-table-column prop="value" label="值"> </el-table-column>
             <el-table-column prop="comment" label="注释"> </el-table-column>
             <el-table-column prop="createTime" label="创建时间"> </el-table-column>
@@ -126,7 +126,7 @@
             <el-table-column prop="key" label="配置key"> </el-table-column>
             <el-table-column prop="value" label="值"> </el-table-column>
             <el-table-column prop="comment" label="注释"> </el-table-column>
-            <el-table-column prop="version" label="版本"> </el-table-column>
+            <el-table-column prop="version" label="版本" width="50"> </el-table-column>
             <el-table-column prop="createTime" label="创建时间"> </el-table-column>
             <el-table-column prop="updateTime" label="更新时间"> </el-table-column>
             <el-table-column prop="operate" label="操作">
@@ -172,7 +172,7 @@
       </el-tabs>
     </el-card>
     <div>
-      <el-dialog :title="saveFormTitle" :visible.sync="saveDialogVisible" width="30%">
+      <el-dialog :title="saveFormTitle" :visible.sync="saveDialogVisible" width="30%" :close-on-click-modal="false">
         <el-form :model="saveForm" size="mini">
           <el-form-item label="key" label-width="60px">
             <el-input v-model="saveForm.key" autocomplete="off" :disabled="saveForm.id != null"></el-input>
