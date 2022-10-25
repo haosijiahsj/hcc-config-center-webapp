@@ -43,7 +43,7 @@
               <el-tag v-if="scope.row.appStatus == 'NOT_ONLINE'" type="info" size="mini">{{scope.row.appStatusDesc}}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="appMode" label="模式">
+          <el-table-column prop="appMode" width="120" label="模式">
             <template slot-scope="scope">
               <el-tag v-if="scope.row.appMode == 'PUSH'" type="success" size="mini">{{scope.row.appModeDesc}}</el-tag>
               <el-tag v-if="scope.row.appMode == 'PULL'" size="mini">{{scope.row.appModeDesc}}</el-tag>
@@ -114,13 +114,13 @@
       <el-dialog :title="saveFormTitle" :visible.sync="saveDialogVisible" width="30%" :close-on-click-modal="false">
         <el-form :model="saveForm" size="mini">
           <el-form-item label="应用编码" label-width="80px">
-            <el-input v-model="saveForm.appCode" autocomplete="off" :disabled="saveForm.id != null"></el-input>
+            <el-input v-model="saveForm.appCode" autocomplete="off" :disabled="saveForm.id && saveForm.appStatus != 'NOT_ONLINE'"></el-input>
           </el-form-item>
           <el-form-item label="应用名称" label-width="80px">
             <el-input v-model="saveForm.appName" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="应用模式" label-width="80px">
-            <el-radio-group v-model="saveForm.appMode" size="small">
+            <el-radio-group v-model="saveForm.appMode" :disabled="saveForm.id && saveForm.appStatus != 'NOT_ONLINE'" size="small">
               <el-radio label="PUSH" border>服务端推送</el-radio>
               <el-radio label="PULL" border>客户端拉取</el-radio>
             </el-radio-group>
@@ -197,14 +197,12 @@ export default {
       this.saveDialogVisible = true;
       this.saveFormTitle = "新增应用";
       this.saveForm = {};
+      this.saveForm.appMode = 'PUSH';
     },
     editApp(row) {
       this.saveFormTitle = "编辑应用";
       this.saveDialogVisible = true;
-      this.saveForm.id = row.id;
-      this.saveForm.appCode = row.appCode;
-      this.saveForm.appName = row.appName;
-      this.saveForm.owner = row.owner;
+      this.saveForm = row;
     },
     online(row) {
       let that = this;
