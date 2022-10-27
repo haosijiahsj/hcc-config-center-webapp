@@ -93,6 +93,10 @@
     <el-card shadow="hover">
       <div slot="header">
         <span>配置信息</span>
+        <span style="float: right">
+          <el-button type="text" size="small" icon="el-icon-upload" @click="importConfig">导入</el-button>
+          <el-button type="text" size="small" icon="el-icon-download" @click="exportConfig">导出</el-button>
+        </span>
       </div>
       <el-tabs v-model="activeName" @tab-click="tabClick">
         <el-tab-pane label="静态配置" name="staticConfig">
@@ -100,8 +104,6 @@
             <el-button size="mini" @click="saveConfig" icon="el-icon-plus"
               >新增</el-button
             >
-            <el-button size="mini">导入</el-button>
-            <el-button size="mini">导出</el-button>
           </div>
           <el-table
             v-loading="staticLoading"
@@ -164,8 +166,6 @@
             <el-button size="mini" @click="saveConfig" icon="el-icon-plus"
               >新增</el-button
             >
-            <el-button size="mini">导入</el-button>
-            <el-button size="mini">导出</el-button>
           </div>
           <el-table
             v-loading="dynamicLoading"
@@ -580,7 +580,9 @@ export default {
     },
     deleteConfig(row) {
       let that = this;
-      this.$confirm("确定要删除该配置吗?", "提示", {
+      let msg = "确定要删除配置 <strong>[" + row.key + "]</strong> 吗?";
+      this.$confirm(msg, "警告", {
+        dangerouslyUseHTMLString: true,
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -596,11 +598,12 @@ export default {
       });
     },
     pushConfig(row) {
-      let that = this;
-      this.$confirm("确定要推送该配置吗?", "提示", {
+      let msg = "确定要推送配置 <strong>[" + row.key + ": " + row.value + "]</strong> 吗?";
+      this.$confirm(msg, "提示", {
+        dangerouslyUseHTMLString: true,
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning",
+        type: "info",
       }).then(() => {
         ajax.get("/application-config/push/" + row.id).then((rs) => {
           if (rs.success) {
@@ -634,7 +637,7 @@ export default {
       this.doQueryHistory();
     },
     queryHistory(row) {
-      this.historyTitle = "key: [" + row.key + "]历史记录";
+      this.historyTitle = "配置：[" + row.key + "]历史记录";
       this.historyDialogVisible = true;
       this.historyQueryPage.applicationConfigId = row.id;
       this.historyQueryPage.page = 1;
@@ -663,7 +666,7 @@ export default {
       this.doQueryPushRecord();
     },
     queryPushRecord(row) {
-      this.pushRecordTitle = "key: [" + row.key + "]推送记录";
+      this.pushRecordTitle = "配置：[" + row.key + "]推送记录";
       this.pushRecordDialogVisible = true;
       this.pushRecordQueryPage.applicationConfigId = row.id;
       this.pushRecordQueryPage.page = 1;
@@ -681,6 +684,18 @@ export default {
             this.$message.error("查询失败！请稍后再试！");
           }
         });
+    },
+    importConfig() {
+      if (!this.appInfo.id) {
+        this.$message.error("请先查询应用！");
+        return;
+      }
+    },
+    exportConfig() {
+      if (!this.appInfo.id) {
+        this.$message.error("请先查询应用！");
+        return;
+      }
     },
   },
 };

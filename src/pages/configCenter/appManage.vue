@@ -7,7 +7,10 @@
       <div>
         <el-form :model="queryForm" :inline="true" size="small">
           <el-form-item label="应用名称">
-            <el-input v-model="queryForm.appName" placeholder="应用名称，支持模糊搜索"></el-input>
+            <el-input
+              v-model="queryForm.appName"
+              placeholder="应用名称，支持模糊搜索"
+            ></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="queryApp">查询</el-button>
@@ -22,9 +25,7 @@
         </div>
         <el-row>
           <div style="text-align: right">
-            <el-button size="mini" @click="saveApp"
-              >新增</el-button
-            >
+            <el-button size="mini" @click="saveApp">新增</el-button>
           </div>
         </el-row>
         <el-table
@@ -35,18 +36,41 @@
         >
           <el-table-column prop="appCode" label="应用编码"></el-table-column>
           <el-table-column prop="appName" label="应用名称"></el-table-column>
-          <el-table-column prop="secretKey" label="密钥" width="260"> </el-table-column>
+          <el-table-column prop="secretKey" label="密钥" width="260">
+          </el-table-column>
           <el-table-column prop="appStatus" label="状态">
             <template slot-scope="scope">
-              <el-tag v-if="scope.row.appStatus == 'ONLINE'" type="success" size="mini">{{scope.row.appStatusDesc}}</el-tag>
-              <el-tag v-if="scope.row.appStatus == 'OFFLINE'" type="danger" size="mini">{{scope.row.appStatusDesc}}</el-tag>
-              <el-tag v-if="scope.row.appStatus == 'NOT_ONLINE'" type="info" size="mini">{{scope.row.appStatusDesc}}</el-tag>
+              <el-tag
+                v-if="scope.row.appStatus == 'ONLINE'"
+                type="success"
+                size="mini"
+                >{{ scope.row.appStatusDesc }}</el-tag
+              >
+              <el-tag
+                v-if="scope.row.appStatus == 'OFFLINE'"
+                type="danger"
+                size="mini"
+                >{{ scope.row.appStatusDesc }}</el-tag
+              >
+              <el-tag
+                v-if="scope.row.appStatus == 'NOT_ONLINE'"
+                type="info"
+                size="mini"
+                >{{ scope.row.appStatusDesc }}</el-tag
+              >
             </template>
           </el-table-column>
           <el-table-column prop="appMode" width="120" label="模式">
             <template slot-scope="scope">
-              <el-tag v-if="scope.row.appMode == 'PUSH'" type="success" size="mini">{{scope.row.appModeDesc}}</el-tag>
-              <el-tag v-if="scope.row.appMode == 'PULL'" size="mini">{{scope.row.appModeDesc}}</el-tag>
+              <el-tag
+                v-if="scope.row.appMode == 'PUSH'"
+                type="success"
+                size="mini"
+                >{{ scope.row.appModeDesc }}</el-tag
+              >
+              <el-tag v-if="scope.row.appMode == 'PULL'" size="mini">{{
+                scope.row.appModeDesc
+              }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="owner" label="负责人"> </el-table-column>
@@ -63,14 +87,20 @@
           <el-table-column prop="operate" width="150" label="操作">
             <template slot-scope="scope">
               <el-button
-                v-if="scope.row.appStatus == 'NOT_ONLINE' || scope.row.appStatus == 'OFFLINE'"
+                v-if="
+                  scope.row.appStatus == 'NOT_ONLINE' ||
+                  scope.row.appStatus == 'OFFLINE'
+                "
                 type="text"
                 @click="editApp(scope.row)"
                 size="mini"
                 >编辑</el-button
               >
               <el-button
-                v-if="scope.row.appStatus == 'NOT_ONLINE' || scope.row.appStatus == 'OFFLINE'"
+                v-if="
+                  scope.row.appStatus == 'NOT_ONLINE' ||
+                  scope.row.appStatus == 'OFFLINE'
+                "
                 type="text"
                 @click="online(scope.row)"
                 size="mini"
@@ -84,7 +114,10 @@
                 >下线</el-button
               >
               <el-button
-                v-if="scope.row.appStatus == 'NOT_ONLINE' || scope.row.appStatus == 'OFFLINE'"
+                v-if="
+                  scope.row.appStatus == 'NOT_ONLINE' ||
+                  scope.row.appStatus == 'OFFLINE'
+                "
                 :underline="false"
                 type="text"
                 size="mini"
@@ -111,16 +144,29 @@
       </el-card>
     </div>
     <div>
-      <el-dialog :title="saveFormTitle" :visible.sync="saveDialogVisible" width="30%" :close-on-click-modal="false">
+      <el-dialog
+        :title="saveFormTitle"
+        :visible.sync="saveDialogVisible"
+        width="30%"
+        :close-on-click-modal="false"
+      >
         <el-form :model="saveForm" size="mini">
           <el-form-item label="应用编码" label-width="80px">
-            <el-input v-model="saveForm.appCode" autocomplete="off" :disabled="saveForm.id && saveForm.appStatus != 'NOT_ONLINE'"></el-input>
+            <el-input
+              v-model="saveForm.appCode"
+              autocomplete="off"
+              :disabled="saveForm.id && saveForm.appStatus != 'NOT_ONLINE'"
+            ></el-input>
           </el-form-item>
           <el-form-item label="应用名称" label-width="80px">
             <el-input v-model="saveForm.appName" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="应用模式" label-width="80px">
-            <el-radio-group v-model="saveForm.appMode" :disabled="saveForm.id && saveForm.appStatus != 'NOT_ONLINE'" size="small">
+            <el-radio-group
+              v-model="saveForm.appMode"
+              :disabled="saveForm.id && saveForm.appStatus != 'NOT_ONLINE'"
+              size="small"
+            >
               <el-radio label="PUSH" border>服务端推送</el-radio>
               <el-radio label="PULL" border>客户端拉取</el-radio>
             </el-radio-group>
@@ -130,7 +176,9 @@
           </el-form-item>
         </el-form>
         <div slot="footer">
-          <el-button @click="saveDialogVisible = false" size="mini">取消</el-button>
+          <el-button @click="saveDialogVisible = false" size="mini"
+            >取消</el-button
+          >
           <el-button type="primary" @click="saveOrUpdateApp" size="mini"
             >确定</el-button
           >
@@ -150,28 +198,26 @@ export default {
       queryForm: {
         appName: null,
         page: 1,
-        size: 10
+        size: 10,
       },
       queryResult: {
         page: 1,
         size: 10,
         totalPage: 0,
         totalSize: 0,
-        data: []
+        data: [],
       },
-      saveFormTitle: '新增应用',
+      saveFormTitle: "新增应用",
       saveForm: {
         id: null,
         appCode: null,
         appName: null,
-        appMode: 'PUSH',
-        owner: null
+        appMode: "PUSH",
+        owner: null,
       },
-    }
+    };
   },
-  mounted() {
-
-  },
+  mounted() {},
   methods: {
     queryApp() {
       let that = this;
@@ -197,7 +243,7 @@ export default {
       this.saveDialogVisible = true;
       this.saveFormTitle = "新增应用";
       this.saveForm = {};
-      this.saveForm.appMode = 'PUSH';
+      this.saveForm.appMode = "PUSH";
     },
     editApp(row) {
       this.saveFormTitle = "编辑应用";
@@ -206,54 +252,60 @@ export default {
     },
     online(row) {
       let that = this;
-      this.$confirm('确定要上线该应用?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          ajax.get("/application/online/" + row.id).then((rs) => {
+      let msg = "确定要上线应用 <strong>[" + row.appCode + "]</strong> 吗?";
+      this.$confirm(msg, "提示", {
+        dangerouslyUseHTMLString: true,
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "info",
+      }).then(() => {
+        ajax.get("/application/online/" + row.id).then((rs) => {
           if (rs.success) {
-              this.$message.success("上线成功");
-              that.queryApp();
-            } else {
-              this.$message.error("上线失败！错误信息：" + rs.message);
-            }
-          });
+            this.$message.success("上线成功");
+            that.queryApp();
+          } else {
+            this.$message.error("上线失败！错误信息：" + rs.message);
+          }
         });
+      });
     },
     offline(row) {
       let that = this;
-      this.$confirm('确定要下线该应用?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          ajax.get("/application/offline/" + row.id).then((rs) => {
+      let msg = "确定要下线应用 <strong>[" + row.appCode + "]</strong> 吗?";
+      this.$confirm(msg, "警告", {
+        dangerouslyUseHTMLString: true,
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        ajax.get("/application/offline/" + row.id).then((rs) => {
           if (rs.success) {
-              this.$message.success("下线成功");
-              that.queryApp();
-            } else {
-              this.$message.error("下线失败！错误信息：" + rs.message);
-            }
-          });
+            this.$message.success("下线成功");
+            that.queryApp();
+          } else {
+            this.$message.error("下线失败！错误信息：" + rs.message);
+          }
         });
+      });
     },
     deleteApp(row) {
       let that = this;
-      this.$confirm('确定要删除该应用?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          ajax.get("/application/delete/" + row.id).then((rs) => {
+      let msg = "确定要删除应用 <strong>[" + row.appCode + "]</strong> 吗?";
+      this.$confirm(msg, "警告", {
+        dangerouslyUseHTMLString: true,
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        ajax.get("/application/delete/" + row.id).then((rs) => {
           if (rs.success) {
-              this.$message.success("删除成功");
-              that.queryApp();
-            } else {
-              this.$message.error("删除失败！错误信息：" + rs.message);
-            }
-          });
+            this.$message.success("删除成功");
+            that.queryApp();
+          } else {
+            this.$message.error("删除失败！错误信息：" + rs.message);
+          }
         });
+      });
     },
     saveOrUpdateApp() {
       let that = this;
@@ -266,9 +318,9 @@ export default {
           this.$message.error("保存失败！错误信息：" + rs.message);
         }
       });
-    }
-  }
-}
+    },
+  },
+};
 </script>
 <style scoped>
 .el-card {
@@ -282,7 +334,7 @@ export default {
   font-size: 14px;
 }
 .page-class {
-    margin-bottom: 5px;
-    text-align: right;
+  margin-bottom: 5px;
+  text-align: right;
 }
 </style>
