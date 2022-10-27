@@ -7,12 +7,17 @@
       <div>
         <el-form :model="queryForm" :inline="true" size="small">
           <el-form-item label="应用名称">
-            <el-select v-model="queryForm.applicationId" filterable placeholder="请选择">
+            <el-select
+              v-model="queryForm.applicationId"
+              filterable
+              placeholder="请选择"
+            >
               <el-option
                 v-for="item in allAppInfos"
                 :key="item.id"
                 :label="item.appName + '[' + item.appCode + ']'"
-                :value="item.id">
+                :value="item.id"
+              >
               </el-option>
             </el-select>
           </el-form-item>
@@ -29,29 +34,58 @@
       <div slot="header">
         <span>应用信息</span>
       </div>
-      <el-descriptions title="" size="small" column="3">
+      <el-descriptions title="" size="small" :column="3">
         <el-descriptions-item label="应用编码">
-          {{appInfo.appCode ? appInfo.appCode : '-'}}&nbsp;&nbsp;
-          <el-link v-if="appInfo.appCode" :underline="false" type="primary" @click="copy(appInfo.appCode)">
+          {{ appInfo.appCode ? appInfo.appCode : "-" }}&nbsp;&nbsp;
+          <el-link
+            v-if="appInfo.appCode"
+            :underline="false"
+            type="primary"
+            @click="copy(appInfo.appCode)"
+          >
             <span style="font-size: 12px">复制</span>
           </el-link>
         </el-descriptions-item>
         <el-descriptions-item label="密钥">
-          {{appInfo.secretKey ? appInfo.secretKey : '-'}}&nbsp;&nbsp;
-          <el-link v-if="appInfo.secretKey" :underline="false" type="primary" @click="copy(appInfo.secretKey)">
-            <span style="font-size: 12px;">复制</span>
+          {{ appInfo.secretKey ? appInfo.secretKey : "-" }}&nbsp;&nbsp;
+          <el-link
+            v-if="appInfo.secretKey"
+            :underline="false"
+            type="primary"
+            @click="copy(appInfo.secretKey)"
+          >
+            <span style="font-size: 12px">复制</span>
           </el-link>
         </el-descriptions-item>
         <el-descriptions-item label="状态">
           <span v-if="!appInfo.appStatus">-</span>
-          <el-tag v-else-if="appInfo.appStatus == 'ONLINE'" type="success" size="mini">{{appInfo.appStatusDesc}}</el-tag>
-          <el-tag v-else-if="appInfo.appStatus == 'OFFLINE'" type="danger" size="mini">{{appInfo.appStatusDesc}}</el-tag>
+          <el-tag
+            v-else-if="appInfo.appStatus == 'ONLINE'"
+            type="success"
+            size="mini"
+            >{{ appInfo.appStatusDesc }}</el-tag
+          >
+          <el-tag
+            v-else-if="appInfo.appStatus == 'OFFLINE'"
+            type="danger"
+            size="mini"
+            >{{ appInfo.appStatusDesc }}</el-tag
+          >
         </el-descriptions-item>
-        <el-descriptions-item label="应用名称">{{appInfo.appName ? appInfo.appName : '-'}}</el-descriptions-item>
+        <el-descriptions-item label="应用名称">{{
+          appInfo.appName ? appInfo.appName : "-"
+        }}</el-descriptions-item>
         <el-descriptions-item label="模式">
           <span v-if="!appInfo.appMode">-</span>
-          <el-tag v-else-if="appInfo.appMode == 'PUSH'" type="success" size="mini">{{appInfo.appModeDesc}}</el-tag>
-          <el-tag v-else-if="appInfo.appMode == 'PULL'" size="mini">{{appInfo.appModeDesc}}</el-tag>
+          <el-tag
+            v-else-if="appInfo.appMode == 'PUSH'"
+            type="success"
+            size="mini"
+            >{{ appInfo.appModeDesc }}</el-tag
+          >
+          <el-tag v-else-if="appInfo.appMode == 'PULL'" size="mini">{{
+            appInfo.appModeDesc
+          }}</el-tag>
         </el-descriptions-item>
         <!-- <el-descriptions-item label="负责人">{{appInfo.owner ? appInfo.owner : '-'}}</el-descriptions-item> -->
       </el-descriptions>
@@ -62,8 +96,10 @@
       </div>
       <el-tabs v-model="activeName" @tab-click="tabClick">
         <el-tab-pane label="静态配置" name="staticConfig">
-          <div style="text-align: right;">
-            <el-button size="mini" @click="saveConfig">新增</el-button>
+          <div style="text-align: right">
+            <el-button size="mini" @click="saveConfig" icon="el-icon-plus"
+              >新增</el-button
+            >
             <el-button size="mini">导入</el-button>
             <el-button size="mini">导出</el-button>
           </div>
@@ -73,11 +109,16 @@
             size="mini"
             :border="true"
           >
-            <el-table-column prop="key" label="配置key" width="200"> </el-table-column>
+            <el-table-column prop="key" label="配置key" width="200">
+            </el-table-column>
             <el-table-column prop="value" label="值"> </el-table-column>
             <el-table-column prop="comment" label="注释"> </el-table-column>
-            <el-table-column prop="createTime" label="创建时间"> </el-table-column>
-            <el-table-column prop="updateTime" label="更新时间"> </el-table-column>
+            <el-table-column prop="version" label="版本" width="50">
+            </el-table-column>
+            <el-table-column prop="createTime" label="创建时间">
+            </el-table-column>
+            <el-table-column prop="updateTime" label="更新时间">
+            </el-table-column>
             <el-table-column prop="operate" width="150" label="操作">
               <template slot-scope="scope">
                 <el-button
@@ -92,6 +133,13 @@
                   size="mini"
                   @click="deleteConfig(scope.row)"
                   >删除</el-button
+                >
+                <el-button
+                  :underline="false"
+                  type="text"
+                  size="mini"
+                  @click="queryHistory(scope.row)"
+                  >历史记录</el-button
                 >
               </template>
             </el-table-column>
@@ -113,7 +161,9 @@
         </el-tab-pane>
         <el-tab-pane label="动态配置" name="dynamicConfig">
           <div style="text-align: right">
-            <el-button size="mini" @click="saveConfig">新增</el-button>
+            <el-button size="mini" @click="saveConfig" icon="el-icon-plus"
+              >新增</el-button
+            >
             <el-button size="mini">导入</el-button>
             <el-button size="mini">导出</el-button>
           </div>
@@ -126,10 +176,13 @@
             <el-table-column prop="key" label="配置key"> </el-table-column>
             <el-table-column prop="value" label="值"> </el-table-column>
             <el-table-column prop="comment" label="注释"> </el-table-column>
-            <el-table-column prop="version" label="版本" width="50"> </el-table-column>
-            <el-table-column prop="createTime" label="创建时间"> </el-table-column>
-            <el-table-column prop="updateTime" label="更新时间"> </el-table-column>
-            <el-table-column prop="operate" label="操作">
+            <el-table-column prop="version" label="版本" width="50">
+            </el-table-column>
+            <el-table-column prop="createTime" label="创建时间">
+            </el-table-column>
+            <el-table-column prop="updateTime" label="更新时间">
+            </el-table-column>
+            <el-table-column prop="operate" label="操作" width="160">
               <template slot-scope="scope">
                 <el-button
                   type="text"
@@ -138,7 +191,9 @@
                   >编辑</el-button
                 >
                 <el-button
-                  v-if="appInfo.appStatus == 'ONLINE' && appInfo.appMode == 'PUSH'"
+                  v-if="
+                    appInfo.appStatus == 'ONLINE' && appInfo.appMode == 'PUSH'
+                  "
                   type="text"
                   @click="pushConfig(scope.row)"
                   size="mini"
@@ -151,6 +206,43 @@
                   @click="deleteConfig(scope.row)"
                   >删除</el-button
                 >
+                <!-- 折中，按钮较少则这个显示出来 -->
+                <el-button
+                  v-if="appInfo.appMode == 'PULL'"
+                  :underline="false"
+                  type="text"
+                  size="mini"
+                  @click="queryHistory(scope.row)"
+                  >历史记录</el-button
+                >
+                <!-- 折中，按钮较多则这个显示出来 -->
+                <el-popover
+                  v-if="appInfo.appMode == 'PUSH'"
+                  placement="top"
+                  trigger="hover"
+                >
+                  <el-button
+                    :underline="false"
+                    type="text"
+                    size="mini"
+                    @click="queryHistory(scope.row)"
+                    >历史记录</el-button
+                  >
+                  <el-button
+                    v-if="appInfo.appMode == 'PUSH'"
+                    :underline="false"
+                    type="text"
+                    size="mini"
+                    @click="queryPushRecord(scope.row)"
+                    >推送记录</el-button
+                  >
+                  <el-button
+                    slot="reference"
+                    icon="el-icon-more"
+                    type="text"
+                    size="mini"
+                  ></el-button>
+                </el-popover>
               </template>
             </el-table-column>
           </el-table>
@@ -172,23 +264,132 @@
       </el-tabs>
     </el-card>
     <div>
-      <el-dialog :title="saveFormTitle" :visible.sync="saveDialogVisible" width="30%" :close-on-click-modal="false">
+      <el-dialog
+        :title="saveFormTitle"
+        :visible.sync="saveDialogVisible"
+        width="30%"
+        :close-on-click-modal="false"
+      >
         <el-form :model="saveForm" size="mini">
           <el-form-item label="key" label-width="60px">
-            <el-input v-model="saveForm.key" autocomplete="off" :disabled="saveForm.id != null"></el-input>
+            <el-input
+              v-model="saveForm.key"
+              autocomplete="off"
+              :disabled="saveForm.id != null"
+            ></el-input>
           </el-form-item>
           <el-form-item label="value" label-width="60px">
-            <el-input v-model="saveForm.value" type="textarea" :autosize="{ minRows: 2, maxRows: 6}" autocomplete="off"></el-input>
+            <el-input
+              v-model="saveForm.value"
+              type="textarea"
+              :autosize="{ minRows: 2, maxRows: 6 }"
+              autocomplete="off"
+            ></el-input>
           </el-form-item>
           <el-form-item label="注释" label-width="60px">
-            <el-input v-model="saveForm.comment" type="textarea" :autosize="{ minRows: 2, maxRows: 6}" autocomplete="off"></el-input>
+            <el-input
+              v-model="saveForm.comment"
+              type="textarea"
+              :autosize="{ minRows: 2, maxRows: 6 }"
+              autocomplete="off"
+            ></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer">
-          <el-button @click="saveDialogVisible = false" size="mini">取消</el-button>
+          <el-button @click="saveDialogVisible = false" size="mini"
+            >取消</el-button
+          >
           <el-button type="primary" @click="saveOrUpdateConfig" size="mini"
             >确定</el-button
           >
+        </div>
+      </el-dialog>
+    </div>
+
+    <div>
+      <el-dialog
+        :title="historyTitle"
+        :visible.sync="historyDialogVisible"
+        width="55%"
+        :close-on-click-modal="false"
+      >
+        <el-table :data="historyQueryResult.data" size="mini" :border="true">
+          <el-table-column prop="value" label="值"> </el-table-column>
+          <el-table-column prop="version" label="版本" width="50">
+          </el-table-column>
+          <el-table-column prop="operateType" label="操作类型" width="100">
+            <template slot-scope="scope">
+              <el-tag
+                v-if="scope.row.operateType == 'CREATE'"
+                type="success"
+                size="mini"
+                >{{ scope.row.operateType }}</el-tag
+              >
+              <el-tag
+                v-if="scope.row.operateType == 'UPDATE'"
+                type="warning"
+                size="mini"
+                >{{ scope.row.operateType }}</el-tag
+              >
+              <el-tag
+                v-if="scope.row.operateType == 'DELETE'"
+                type="danger"
+                size="mini"
+                >{{ scope.row.operateType }}</el-tag
+              >
+            </template>
+          </el-table-column>
+          <el-table-column prop="operateUser" label="操作人" width="100">
+          </el-table-column>
+          <el-table-column prop="createTime" label="操作时间">
+          </el-table-column>
+        </el-table>
+        <div class="page-class">
+          <el-pagination
+            small
+            background
+            @size-change="historySizeChange"
+            @current-change="historyCurrentChange"
+            :current-page="historyQueryResult.page"
+            :page-sizes="[10, 20]"
+            :page-size="10"
+            layout="total, prev, pager, next"
+            :total="historyQueryResult.totalSize"
+          >
+          </el-pagination>
+        </div>
+      </el-dialog>
+    </div>
+
+    <div>
+      <el-dialog
+        :title="pushRecordTitle"
+        :visible.sync="pushRecordDialogVisible"
+        width="55%"
+        :close-on-click-modal="false"
+      >
+        <el-table :data="pushRecordQueryResult.data" size="mini" :border="true">
+          <el-table-column prop="value" label="值"> </el-table-column>
+          <el-table-column prop="version" label="版本" width="50">
+          </el-table-column>
+          <el-table-column prop="operateUser" label="操作人" width="100">
+          </el-table-column>
+          <el-table-column prop="createTime" label="操作时间">
+          </el-table-column>
+        </el-table>
+        <div class="page-class">
+          <el-pagination
+            small
+            background
+            @size-change="pushRecordSizeChange"
+            @current-change="pushRecordCurrentChange"
+            :current-page="pushRecordQueryResult.page"
+            :page-sizes="[10, 20]"
+            :page-size="10"
+            layout="total, prev, pager, next"
+            :total="pushRecordQueryResult.totalSize"
+          >
+          </el-pagination>
         </div>
       </el-dialog>
     </div>
@@ -213,7 +414,7 @@ export default {
         appStatus: null,
         appStatusDesc: null,
         secretKey: null,
-        owner: null
+        owner: null,
       },
       saveForm: {
         applicationId: null,
@@ -226,34 +427,44 @@ export default {
         applicationId: null,
         key: null,
         page: 1,
-        size: 10
+        size: 10,
       },
       staticQueryPage: {
         page: 1,
-        size: 10
+        size: 10,
       },
       dynamicQueryPage: {
         page: 1,
-        size: 10
+        size: 10,
       },
-      staticQueryResult: {
-
+      staticQueryResult: {},
+      dynamicQueryResult: {},
+      historyTitle: "历史记录",
+      historyDialogVisible: false,
+      historyQueryResult: {},
+      historyQueryPage: {
+        page: 1,
+        size: 20,
       },
-      dynamicQueryResult: {
-
+      pushRecordTitle: "推送记录",
+      pushRecordDialogVisible: false,
+      pushRecordQueryResult: {},
+      pushRecordQueryPage: {
+        page: 1,
+        size: 20,
       },
     };
   },
   mounted() {
     let that = this;
-      // 查询所有app信息
-      ajax.get("/application/all").then((rs) => {
-        if (rs.success) {
-          that.allAppInfos = rs.data;
-        } else {
-          this.$message.error("查询失败！请稍后再试！");
-        }
-      });
+    // 查询所有app信息
+    ajax.get("/application/all").then((rs) => {
+      if (rs.success) {
+        that.allAppInfos = rs.data;
+      } else {
+        this.$message.error("查询失败！请稍后再试！");
+      }
+    });
   },
   methods: {
     queryAppConfig() {
@@ -273,7 +484,7 @@ export default {
             that.dynamicQueryResult = rs.data;
           } else {
             that.staticQueryResult = rs.data;
-          }          
+          }
         } else {
           this.$message.error("查询失败！请稍后再试！");
         }
@@ -308,14 +519,16 @@ export default {
       }
       // 查询app信息
       let queryAppSuccess = true;
-      ajax.get("/application/get/" + that.queryForm.applicationId).then((rs) => {
-        if (rs.success) {
-          that.appInfo = rs.data;
-        } else {
-          this.$message.error("查询应用失败！错误信息：" + rs.message);
-          queryAppSuccess = false;
-        }
-      });
+      ajax
+        .get("/application/get/" + that.queryForm.applicationId)
+        .then((rs) => {
+          if (rs.success) {
+            that.appInfo = rs.data;
+          } else {
+            this.$message.error("查询应用失败！错误信息：" + rs.message);
+            queryAppSuccess = false;
+          }
+        });
       if (!queryAppSuccess) {
         return;
       }
@@ -323,7 +536,7 @@ export default {
         that.queryAppConfig();
       } else {
         that.queryAppConfig();
-      }      
+      }
     },
     saveConfig() {
       if (!this.appInfo.id) {
@@ -367,52 +580,109 @@ export default {
     },
     deleteConfig(row) {
       let that = this;
-      this.$confirm('确定要删除该配置吗?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          ajax.get("/application-config/delete/" + row.id).then((rs) => {
+      this.$confirm("确定要删除该配置吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        ajax.get("/application-config/delete/" + row.id).then((rs) => {
           if (rs.success) {
-              this.$message.success("删除成功");
-              that.queryAppConfig();
-            } else {
-              this.$message.error("删除失败！错误信息：" + rs.message);
-            }
-          });
+            this.$message.success("删除成功");
+            that.queryAppConfig();
+          } else {
+            this.$message.error("删除失败！错误信息：" + rs.message);
+          }
         });
+      });
     },
     pushConfig(row) {
       let that = this;
-      this.$confirm('确定要推送该配置吗?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          ajax.get("/application-config/push/" + row.id).then((rs) => {
+      this.$confirm("确定要推送该配置吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        ajax.get("/application-config/push/" + row.id).then((rs) => {
           if (rs.success) {
-              this.$message.success("推送成功");
-            } else {
-              this.$message.error("推送失败！错误信息：" + rs.message);
-            }
-          });
+            this.$message.success("推送成功");
+          } else {
+            this.$message.error("推送失败！错误信息：" + rs.message);
+          }
         });
+      });
     },
     copy(value) {
       var that = this;
       this.$copyText(value).then(
         function (e) {
           that.$message({
-            message: '已复制',
-            type: 'success'
+            message: "已复制",
+            type: "success",
           });
         },
         function (e) {
-          that.$message.error('复制失败');
+          that.$message.error("复制失败");
         }
       );
-    }
-  }
+    },
+    historyCurrentChange(page) {
+      this.historyQueryPage.page = page;
+      this.doQueryHistory();
+    },
+    historySizeChange(size) {
+      this.historyQueryPage.size = size;
+      this.doQueryHistory();
+    },
+    queryHistory(row) {
+      this.historyTitle = "key: [" + row.key + "]历史记录";
+      this.historyDialogVisible = true;
+      this.historyQueryPage.applicationConfigId = row.id;
+      this.historyQueryPage.page = 1;
+      this.historyQueryPage.size = 10;
+      this.doQueryHistory();
+    },
+    doQueryHistory() {
+      var that = this;
+      ajax
+        .post("/application-config-history/page", that.historyQueryPage)
+        .then((rs) => {
+          if (rs.success) {
+            that.historyQueryResult = rs.data;
+          } else {
+            this.$message.error("查询失败！请稍后再试！");
+          }
+        });
+    },
+
+    pushRecordCurrentChange(page) {
+      this.pushRecordQueryPage.page = page;
+      this.doQueryPushRecord();
+    },
+    pushRecordSizeChange(size) {
+      this.pushRecordQueryPage.size = size;
+      this.doQueryPushRecord();
+    },
+    queryPushRecord(row) {
+      this.pushRecordTitle = "key: [" + row.key + "]推送记录";
+      this.pushRecordDialogVisible = true;
+      this.pushRecordQueryPage.applicationConfigId = row.id;
+      this.pushRecordQueryPage.page = 1;
+      this.pushRecordQueryPage.size = 10;
+      this.doQueryPushRecord();
+    },
+    doQueryPushRecord() {
+      var that = this;
+      ajax
+        .post("/application-config-push-record/page", that.pushRecordQueryPage)
+        .then((rs) => {
+          if (rs.success) {
+            that.pushRecordQueryResult = rs.data;
+          } else {
+            this.$message.error("查询失败！请稍后再试！");
+          }
+        });
+    },
+  },
 };
 </script>
 <style scoped>
@@ -428,7 +698,7 @@ export default {
   font-size: 14px;
 }
 .page-class {
-    margin-bottom: 5px;
-    text-align: right;
+  margin-bottom: 5px;
+  text-align: right;
 }
 </style>
