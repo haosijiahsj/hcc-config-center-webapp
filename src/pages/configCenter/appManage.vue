@@ -63,12 +63,12 @@
           <el-table-column prop="appMode" width="120" label="模式">
             <template slot-scope="scope">
               <el-tag
-                v-if="scope.row.appMode == 'PUSH'"
+                v-if="scope.row.appMode == 'LONG_CONNECT'"
                 type="success"
                 size="mini"
                 >{{ scope.row.appModeDesc }}</el-tag
               >
-              <el-tag v-if="scope.row.appMode == 'PULL'" size="mini">{{
+              <el-tag v-if="scope.row.appMode == 'LONG_POLLING'" size="mini">{{
                 scope.row.appModeDesc
               }}</el-tag>
             </template>
@@ -167,8 +167,8 @@
               :disabled="saveForm.id && saveForm.appStatus != 'NOT_ONLINE'"
               size="small"
             >
-              <el-radio label="PUSH" border>服务端推送</el-radio>
-              <el-radio label="PULL" border>客户端拉取</el-radio>
+              <el-radio label="LONG_CONNECT" border>长连接</el-radio>
+              <el-radio label="LONG_POLLING" border>长轮询</el-radio>
             </el-radio-group>
           </el-form-item>
           <el-form-item label="负责人" label-width="80px">
@@ -212,7 +212,7 @@ export default {
         id: null,
         appCode: null,
         appName: null,
-        appMode: "PUSH",
+        appMode: "LONG_CONNECT",
         owner: null,
       },
     };
@@ -243,7 +243,7 @@ export default {
       this.saveDialogVisible = true;
       this.saveFormTitle = "新增应用";
       this.saveForm = {};
-      this.saveForm.appMode = "PUSH";
+      this.saveForm.appMode = "LONG_CONNECT";
     },
     editApp(row) {
       this.saveFormTitle = "编辑应用";

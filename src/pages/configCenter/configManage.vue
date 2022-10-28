@@ -78,12 +78,12 @@
         <el-descriptions-item label="模式">
           <span v-if="!appInfo.appMode">-</span>
           <el-tag
-            v-else-if="appInfo.appMode == 'PUSH'"
+            v-else-if="appInfo.appMode == 'LONG_CONNECT'"
             type="success"
             size="mini"
             >{{ appInfo.appModeDesc }}</el-tag
           >
-          <el-tag v-else-if="appInfo.appMode == 'PULL'" size="mini">{{
+          <el-tag v-else-if="appInfo.appMode == 'LONG_POLLING'" size="mini">{{
             appInfo.appModeDesc
           }}</el-tag>
         </el-descriptions-item>
@@ -94,8 +94,20 @@
       <div slot="header">
         <span>配置信息</span>
         <span style="float: right">
-          <el-button type="text" size="small" icon="el-icon-upload" @click="importConfig">导入</el-button>
-          <el-button type="text" size="small" icon="el-icon-download" @click="exportConfig">导出</el-button>
+          <el-button
+            type="text"
+            size="small"
+            icon="el-icon-upload"
+            @click="importConfig"
+            >导入</el-button
+          >
+          <el-button
+            type="text"
+            size="small"
+            icon="el-icon-download"
+            @click="exportConfig"
+            >导出</el-button
+          >
         </span>
       </div>
       <el-tabs v-model="activeName" @tab-click="tabClick">
@@ -113,7 +125,7 @@
           >
             <el-table-column prop="key" label="配置key" width="200">
             </el-table-column>
-            <el-table-column prop="value" label="值"> </el-table-column>
+            <el-table-column prop="value" label="配置值"> </el-table-column>
             <el-table-column prop="comment" label="注释"> </el-table-column>
             <el-table-column prop="version" label="版本" width="50">
             </el-table-column>
@@ -174,7 +186,7 @@
             :border="true"
           >
             <el-table-column prop="key" label="配置key"> </el-table-column>
-            <el-table-column prop="value" label="值"> </el-table-column>
+            <el-table-column prop="value" label="配置值"> </el-table-column>
             <el-table-column prop="comment" label="注释"> </el-table-column>
             <el-table-column prop="version" label="版本" width="50">
             </el-table-column>
@@ -192,7 +204,8 @@
                 >
                 <el-button
                   v-if="
-                    appInfo.appStatus == 'ONLINE' && appInfo.appMode == 'PUSH'
+                    appInfo.appStatus == 'ONLINE' &&
+                    appInfo.appMode == 'LONG_CONNECT'
                   "
                   type="text"
                   @click="pushConfig(scope.row)"
@@ -206,21 +219,8 @@
                   @click="deleteConfig(scope.row)"
                   >删除</el-button
                 >
-                <!-- 折中，按钮较少则这个显示出来 -->
-                <el-button
-                  v-if="appInfo.appMode == 'PULL'"
-                  :underline="false"
-                  type="text"
-                  size="mini"
-                  @click="queryHistory(scope.row)"
-                  >历史记录</el-button
-                >
-                <!-- 折中，按钮较多则这个显示出来 -->
-                <el-popover
-                  v-if="appInfo.appMode == 'PUSH'"
-                  placement="top"
-                  trigger="hover"
-                >
+                &nbsp;&nbsp;
+                <el-popover placement="top" trigger="hover">
                   <el-button
                     :underline="false"
                     type="text"
@@ -229,7 +229,6 @@
                     >历史记录</el-button
                   >
                   <el-button
-                    v-if="appInfo.appMode == 'PUSH'"
                     :underline="false"
                     type="text"
                     size="mini"
@@ -393,6 +392,40 @@
         </div>
       </el-dialog>
     </div>
+    <div>
+      <el-dialog
+        title="导入配置"
+        :visible.sync="uploadDialogVisible"
+        width="30%"
+        :close-on-click-modal="false"
+      >
+        <el-upload
+          ref="upload"
+          :data="{ applicationId: appInfo.id }"
+          :limit="1"
+          :before-upload="beforeUpload"
+          :action="uploadUrl"
+          :on-success="importSuccess"
+          drag
+          style="text-align: center"
+          :auto-upload="false"
+        >
+          <i class="el-icon-upload"></i>
+          <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+          <div class="el-upload__tip" slot="tip">
+            支持yml、properties、json格式，yml、properties将处理为静态配置
+          </div>
+        </el-upload>
+        <div slot="footer">
+          <el-button @click="uploadDialogVisible = false" size="mini"
+            >取消</el-button
+          >
+          <el-button type="primary" @click="doImportConfig" size="mini"
+            >确定</el-button
+          >
+        </div>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -453,6 +486,8 @@ export default {
         page: 1,
         size: 20,
       },
+      uploadDialogVisible: false,
+      uploadUrl: ajax.getBaseUrl() + "/application-config/import",
     };
   },
   mounted() {
@@ -507,7 +542,7 @@ export default {
       this.queryAppConfig();
     },
     tabClick() {
-      if (this.queryForm.applicationId) {
+      if (this.queryForm.applicationId && this.appInfo.appCode) {
         this.queryAppConfig();
       }
     },
@@ -598,7 +633,12 @@ export default {
       });
     },
     pushConfig(row) {
-      let msg = "确定要推送配置 <strong>[" + row.key + ": " + row.value + "]</strong> 吗?";
+      let msg =
+        "确定要推送配置 <strong>[" +
+        row.key +
+        ": " +
+        row.value +
+        "]</strong> 吗?";
       this.$confirm(msg, "提示", {
         dangerouslyUseHTMLString: true,
         confirmButtonText: "确定",
@@ -690,11 +730,28 @@ export default {
         this.$message.error("请先查询应用！");
         return;
       }
+      this.uploadDialogVisible = true;
     },
     exportConfig() {
       if (!this.appInfo.id) {
         this.$message.error("请先查询应用！");
         return;
+      }
+      window.location.href =
+        ajax.getBaseUrl() +
+        "/application-config/export?applicationId=" +
+        this.appInfo.id;
+    },
+    beforeUpload(file) {},
+    doImportConfig() {
+      this.$refs.upload.submit();
+    },
+    importSuccess(rs) {
+      if (rs.success) {
+        this.$message.success("导入成功！");
+        this.$refs.upload.clearFiles();
+      } else {
+        this.$message.error("导入失败！错误信息：" + rs.message);
       }
     },
   },

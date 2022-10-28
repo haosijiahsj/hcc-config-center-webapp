@@ -9,6 +9,9 @@ axios.defaults.timeout = 5000;
 
 // 封装自己的get/post方法
 export default {
+    getBaseUrl: function() {
+      return axios.defaults.baseURL;
+    },
     get: function(path = '', data = {}) {
         return new Promise(function(resolve, reject) {
             axios.get(path, { params: data })
