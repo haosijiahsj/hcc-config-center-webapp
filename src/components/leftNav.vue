@@ -19,18 +19,18 @@ export default {
   data() {
     return {
       menuList: [
-        {
-          id: 1,
-          name: 'Dashboard',
-          icon: 'el-icon-document',
-            children: [
-                {
-                    id: 11,
-                    name: '统计',
-                    path: ''
-                }
-            ]
-        },
+        // {
+        //   id: 1,
+        //   name: 'Dashboard',
+        //   icon: 'el-icon-document',
+        //     children: [
+        //         {
+        //             id: 11,
+        //             name: '统计',
+        //             path: ''
+        //         }
+        //     ]
+        // },
         {
           id: 2,
           name: '配置中心',

@@ -1,6 +1,6 @@
 <template>
   <div style="text-align: left">
-    <el-card shadow="hover" size="mini">
+    <el-card shadow="never">
       <div slot="header">
         <span>查询条件</span>
       </div>
@@ -30,7 +30,7 @@
         </el-form>
       </div>
     </el-card>
-    <el-card shadow="hover">
+    <el-card shadow="never">
       <div slot="header">
         <span>应用信息</span>
       </div>
@@ -90,7 +90,7 @@
         <!-- <el-descriptions-item label="负责人">{{appInfo.owner ? appInfo.owner : '-'}}</el-descriptions-item> -->
       </el-descriptions>
     </el-card>
-    <el-card shadow="hover">
+    <el-card shadow="never">
       <div slot="header">
         <span>配置信息</span>
         <span style="float: right">
@@ -220,7 +220,7 @@
                   >删除</el-button
                 >
                 &nbsp;&nbsp;
-                <el-popover placement="top" trigger="hover">
+                <el-popover placement="top" trigger="hover" popper-class="button-popover">
                   <el-button
                     :underline="false"
                     type="text"
@@ -269,19 +269,19 @@
         width="30%"
         :close-on-click-modal="false"
       >
-        <el-form :model="saveForm" size="mini">
-          <el-form-item label="key" label-width="60px">
+        <el-form :model="saveForm" ref="saveForm" size="mini" :rules="saveFormRules">
+          <el-form-item label="key" label-width="60px" prop="key">
             <el-input
               v-model="saveForm.key"
               autocomplete="off"
               :disabled="saveForm.id != null"
             ></el-input>
           </el-form-item>
-          <el-form-item label="value" label-width="60px">
+          <el-form-item label="value" label-width="60px" prop="value">
             <el-input
               v-model="saveForm.value"
               type="textarea"
-              :autosize="{ minRows: 2, maxRows: 6 }"
+              :autosize="{ minRows: 3, maxRows: 6 }"
               autocomplete="off"
             ></el-input>
           </el-form-item>
@@ -289,7 +289,7 @@
             <el-input
               v-model="saveForm.comment"
               type="textarea"
-              :autosize="{ minRows: 2, maxRows: 6 }"
+              :autosize="{ minRows: 3, maxRows: 6 }"
               autocomplete="off"
             ></el-input>
           </el-form-item>
@@ -398,11 +398,13 @@
         :visible.sync="uploadDialogVisible"
         width="30%"
         :close-on-click-modal="false"
+        :destroy-on-close="true"
       >
         <el-upload
           ref="upload"
           :data="{ applicationId: appInfo.id }"
           :limit="1"
+          accept=".json, .yml, .properties"
           :before-upload="beforeUpload"
           :action="uploadUrl"
           :on-success="importSuccess"
@@ -411,7 +413,7 @@
           :auto-upload="false"
         >
           <i class="el-icon-upload"></i>
-          <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+          <div class="el-upload__text">将文件拖到此处，或<em>点击导入</em></div>
           <div class="el-upload__tip" slot="tip">
             支持yml、properties、json格式，yml、properties将处理为静态配置
           </div>
@@ -455,6 +457,10 @@ export default {
         value: null,
         comment: null,
         dynamic: false,
+      },
+      saveFormRules: {
+        key: [{ required: true, message: "配置key必填" }],
+        value: [{ required: true, message: "配置值必填" }],
       },
       queryForm: {
         applicationId: null,
@@ -578,7 +584,12 @@ export default {
         this.$message.error("请先查询应用！");
         return;
       }
-      this.saveForm = {};
+      this.saveForm = {
+        id: null,
+        key: null,
+        value: null,
+        comment: null
+      };
       if (this.activeName == "staticConfig") {
         this.saveFormTitle = "新增静态配置";
       } else {
@@ -594,13 +605,19 @@ export default {
       } else {
         that.saveForm.dynamic = true;
       }
-      ajax.post("/application-config/save", that.saveForm).then((rs) => {
-        if (rs.success) {
-          this.$message.success("保存成功");
-          that.saveDialogVisible = false;
-          that.queryAppConfig();
+      this.$refs['saveForm'].validate((valid) => {
+        if (valid) {
+          ajax.post("/application-config/save", that.saveForm).then((rs) => {
+            if (rs.success) {
+              this.$message.success("保存成功");
+              that.saveDialogVisible = false;
+              that.queryAppConfig();
+            } else {
+              this.$message.error("保存失败！错误信息：" + rs.message);
+            }
+          });
         } else {
-          this.$message.error("保存失败！错误信息：" + rs.message);
+          return false;
         }
       });
     },
@@ -750,8 +767,10 @@ export default {
       if (rs.success) {
         this.$message.success("导入成功！");
         this.$refs.upload.clearFiles();
+        this.uploadDialogVisible = false;
       } else {
         this.$message.error("导入失败！错误信息：" + rs.message);
+        this.$refs.upload.clearFiles();
       }
     },
   },
@@ -772,5 +791,8 @@ export default {
 .page-class {
   margin-bottom: 5px;
   text-align: right;
+}
+.el-popover .button-popover {
+  text-align: center;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div style="text-align: left">
-    <el-card shadow="hover">
+    <el-card shadow="never">
       <div slot="header">
         <span>查询条件</span>
       </div>
@@ -19,13 +19,13 @@
       </div>
     </el-card>
     <div>
-      <el-card shadow="hover">
+      <el-card shadow="never">
         <div slot="header">
           <span>应用信息</span>
         </div>
         <el-row>
           <div style="text-align: right">
-            <el-button size="mini" @click="saveApp">新增</el-button>
+            <el-button size="mini" @click="saveApp" icon="el-icon-plus">新增</el-button>
           </div>
         </el-row>
         <el-table
@@ -150,15 +150,15 @@
         width="30%"
         :close-on-click-modal="false"
       >
-        <el-form :model="saveForm" size="mini">
-          <el-form-item label="应用编码" label-width="80px">
+        <el-form :model="saveForm" ref="saveForm" size="mini" :rules="saveFormRules">
+          <el-form-item label="应用编码" label-width="80px" prop="appCode">
             <el-input
               v-model="saveForm.appCode"
               autocomplete="off"
               :disabled="saveForm.id && saveForm.appStatus != 'NOT_ONLINE'"
             ></el-input>
           </el-form-item>
-          <el-form-item label="应用名称" label-width="80px">
+          <el-form-item label="应用名称" label-width="80px" prop="appName">
             <el-input v-model="saveForm.appName" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="应用模式" label-width="80px">
@@ -215,6 +215,10 @@ export default {
         appMode: "LONG_CONNECT",
         owner: null,
       },
+      saveFormRules: {
+        appCode: [{ required: true, message: "应用编码必填" }],
+        appName: [{ required: true, message: "应用名称必填" }],
+      },
     };
   },
   mounted() {},
@@ -242,8 +246,13 @@ export default {
     saveApp() {
       this.saveDialogVisible = true;
       this.saveFormTitle = "新增应用";
-      this.saveForm = {};
-      this.saveForm.appMode = "LONG_CONNECT";
+      this.saveForm = {
+        id: null,
+        appCode: null,
+        appName: null,
+        appMode: "LONG_CONNECT",
+        owner: null
+      };
     },
     editApp(row) {
       this.saveFormTitle = "编辑应用";
@@ -309,13 +318,19 @@ export default {
     },
     saveOrUpdateApp() {
       let that = this;
-      ajax.post("/application/save", that.saveForm).then((rs) => {
-        if (rs.success) {
-          this.$message.success("保存成功");
-          that.saveDialogVisible = false;
-          that.queryApp();
+      this.$refs['saveForm'].validate((valid) => {
+        if (valid) {
+          ajax.post("/application/save", that.saveForm).then((rs) => {
+            if (rs.success) {
+              this.$message.success("保存成功");
+              that.saveDialogVisible = false;
+              that.queryApp();
+            } else {
+              this.$message.error("保存失败！错误信息：" + rs.message);
+            }
+          });
         } else {
-          this.$message.error("保存失败！错误信息：" + rs.message);
+          return false;
         }
       });
     },
