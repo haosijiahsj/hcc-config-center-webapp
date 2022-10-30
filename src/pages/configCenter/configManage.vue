@@ -294,6 +294,7 @@
             ></el-input>
           </el-form-item>
         </el-form>
+        <el-alert v-if="saveForm.id != null" title="注意：版本号只会在value值变更时+1" type="warning"></el-alert>
         <div slot="footer">
           <el-button @click="saveDialogVisible = false" size="mini"
             >取消</el-button
