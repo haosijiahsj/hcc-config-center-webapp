@@ -7,17 +7,9 @@
       <div>
         <el-form :model="queryForm" :inline="true" size="small">
           <el-form-item label="应用名称">
-            <el-select
-              v-model="queryForm.applicationId"
-              filterable
-              placeholder="请选择"
-            >
-              <el-option
-                v-for="item in allAppInfos"
-                :key="item.id"
-                :label="item.appName + '[' + item.appCode + ']'"
-                :value="item.id"
-              >
+            <el-select v-model="queryForm.applicationId" filterable placeholder="请选择">
+              <el-option v-for="item in allAppInfos" :key="item.id" :label="item.appName + '[' + item.appCode + ']'"
+                :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
@@ -37,54 +29,32 @@
       <el-descriptions title="" size="small" :column="3">
         <el-descriptions-item label="应用编码">
           {{ appInfo.appCode ? appInfo.appCode : "-" }}&nbsp;&nbsp;
-          <el-link
-            v-if="appInfo.appCode"
-            :underline="false"
-            type="primary"
-            @click="copy(appInfo.appCode)"
-          >
+          <el-link v-if="appInfo.appCode" :underline="false" type="primary" @click="copy(appInfo.appCode)">
             <span style="font-size: 12px">复制</span>
           </el-link>
         </el-descriptions-item>
         <el-descriptions-item label="密钥">
           {{ appInfo.secretKey ? appInfo.secretKey : "-" }}&nbsp;&nbsp;
-          <el-link
-            v-if="appInfo.secretKey"
-            :underline="false"
-            type="primary"
-            @click="copy(appInfo.secretKey)"
-          >
+          <el-link v-if="appInfo.secretKey" :underline="false" type="primary" @click="copy(appInfo.secretKey)">
             <span style="font-size: 12px">复制</span>
           </el-link>
         </el-descriptions-item>
         <el-descriptions-item label="状态">
           <span v-if="!appInfo.appStatus">-</span>
-          <el-tag
-            v-else-if="appInfo.appStatus == 'ONLINE'"
-            type="success"
-            size="mini"
-            >{{ appInfo.appStatusDesc }}</el-tag
-          >
-          <el-tag
-            v-else-if="appInfo.appStatus == 'OFFLINE'"
-            type="danger"
-            size="mini"
-            >{{ appInfo.appStatusDesc }}</el-tag
-          >
+          <el-tag v-else-if="appInfo.appStatus == 'ONLINE'" type="success" size="mini">{{ appInfo.appStatusDesc }}
+          </el-tag>
+          <el-tag v-else-if="appInfo.appStatus == 'OFFLINE'" type="danger" size="mini">{{ appInfo.appStatusDesc }}
+          </el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="应用名称">{{
-          appInfo.appName ? appInfo.appName : "-"
+            appInfo.appName ? appInfo.appName : "-"
         }}</el-descriptions-item>
         <el-descriptions-item label="模式">
           <span v-if="!appInfo.appMode">-</span>
-          <el-tag
-            v-else-if="appInfo.appMode == 'LONG_CONNECT'"
-            type="success"
-            size="mini"
-            >{{ appInfo.appModeDesc }}</el-tag
-          >
+          <el-tag v-else-if="appInfo.appMode == 'LONG_CONNECT'" type="success" size="mini">{{ appInfo.appModeDesc }}
+          </el-tag>
           <el-tag v-else-if="appInfo.appMode == 'LONG_POLLING'" size="mini">{{
-            appInfo.appModeDesc
+              appInfo.appModeDesc
           }}</el-tag>
         </el-descriptions-item>
         <!-- <el-descriptions-item label="负责人">{{appInfo.owner ? appInfo.owner : '-'}}</el-descriptions-item> -->
@@ -94,35 +64,16 @@
       <div slot="header">
         <span>配置信息</span>
         <span style="float: right">
-          <el-button
-            type="text"
-            size="small"
-            icon="el-icon-upload"
-            @click="importConfig"
-            >导入</el-button
-          >
-          <el-button
-            type="text"
-            size="small"
-            icon="el-icon-download"
-            @click="exportConfig"
-            >导出</el-button
-          >
+          <el-button type="text" size="small" icon="el-icon-upload" @click="importConfig">导入</el-button>
+          <el-button type="text" size="small" icon="el-icon-download" @click="exportConfig">导出</el-button>
         </span>
       </div>
       <el-tabs v-model="activeName" @tab-click="tabClick">
         <el-tab-pane label="静态配置" name="staticConfig">
           <div style="text-align: right">
-            <el-button size="mini" @click="saveConfig" icon="el-icon-plus"
-              >新增</el-button
-            >
+            <el-button size="mini" @click="saveConfig" icon="el-icon-plus">新增</el-button>
           </div>
-          <el-table
-            v-loading="staticLoading"
-            :data="staticQueryResult.data"
-            size="mini"
-            :border="true"
-          >
+          <el-table v-loading="staticLoading" :data="staticQueryResult.data" size="mini" :border="true">
             <el-table-column prop="key" label="配置key" width="200">
             </el-table-column>
             <el-table-column prop="value" label="配置值"> </el-table-column>
@@ -135,56 +86,25 @@
             </el-table-column>
             <el-table-column prop="operate" width="150" label="操作">
               <template slot-scope="scope">
-                <el-button
-                  type="text"
-                  @click="editConfig(scope.row)"
-                  size="mini"
-                  >编辑</el-button
-                >
-                <el-button
-                  :underline="false"
-                  type="text"
-                  size="mini"
-                  @click="deleteConfig(scope.row)"
-                  >删除</el-button
-                >
-                <el-button
-                  :underline="false"
-                  type="text"
-                  size="mini"
-                  @click="queryHistory(scope.row)"
-                  >历史记录</el-button
-                >
+                <el-button type="text" @click="editConfig(scope.row)" size="mini">编辑</el-button>
+                <el-button :underline="false" type="text" size="mini" class="button-dander"
+                  @click="deleteConfig(scope.row)">删除</el-button>
+                <el-button :underline="false" type="text" size="mini" @click="queryHistory(scope.row)">历史记录</el-button>
               </template>
             </el-table-column>
           </el-table>
           <div class="page-class">
-            <el-pagination
-              small
-              background
-              @size-change="staticSizeChange"
-              @current-change="staticCurrentChange"
-              :current-page="staticQueryResult.page"
-              :page-sizes="[10, 20, 50]"
-              :page-size="10"
-              layout="total, sizes, prev, pager, next"
-              :total="staticQueryResult.totalSize"
-            >
+            <el-pagination small background @size-change="staticSizeChange" @current-change="staticCurrentChange"
+              :current-page="staticQueryResult.page" :page-sizes="[10, 20, 50]" :page-size="10"
+              layout="total, sizes, prev, pager, next" :total="staticQueryResult.totalSize">
             </el-pagination>
           </div>
         </el-tab-pane>
         <el-tab-pane label="动态配置" name="dynamicConfig">
           <div style="text-align: right">
-            <el-button size="mini" @click="saveConfig" icon="el-icon-plus"
-              >新增</el-button
-            >
+            <el-button size="mini" @click="saveConfig" icon="el-icon-plus">新增</el-button>
           </div>
-          <el-table
-            v-loading="dynamicLoading"
-            :data="dynamicQueryResult.data"
-            size="mini"
-            :border="true"
-          >
+          <el-table v-loading="dynamicLoading" :data="dynamicQueryResult.data" size="mini" :border="true">
             <el-table-column prop="key" label="配置key"> </el-table-column>
             <el-table-column prop="value" label="配置值"> </el-table-column>
             <el-table-column prop="comment" label="注释"> </el-table-column>
@@ -196,147 +116,68 @@
             </el-table-column>
             <el-table-column prop="operate" label="操作" width="160">
               <template slot-scope="scope">
-                <el-button
-                  type="text"
-                  @click="editConfig(scope.row)"
-                  size="mini"
-                  >编辑</el-button
-                >
-                <el-button
-                  v-if="
-                    appInfo.appStatus == 'ONLINE' &&
-                    appInfo.appMode == 'LONG_CONNECT'
-                  "
-                  type="text"
-                  @click="pushConfig(scope.row)"
-                  size="mini"
-                  >推送</el-button
-                >
-                <el-button
-                  :underline="false"
-                  type="text"
-                  size="mini"
-                  @click="deleteConfig(scope.row)"
-                  >删除</el-button
-                >
+                <el-button type="text" @click="editConfig(scope.row)" size="mini">编辑</el-button>
+                <el-button v-if="
+                  appInfo.appStatus == 'ONLINE' &&
+                  appInfo.appMode == 'LONG_CONNECT'
+                " type="text" @click="pushConfig(scope.row)" size="mini">推送</el-button>
+                <el-button :underline="false" type="text" size="mini" class="button-dander"
+                  @click="deleteConfig(scope.row)">删除</el-button>
                 &nbsp;&nbsp;
                 <el-popover placement="top" trigger="hover" popper-class="button-popover">
-                  <el-button
-                    :underline="false"
-                    type="text"
-                    size="mini"
-                    @click="queryHistory(scope.row)"
-                    >历史记录</el-button
-                  >
-                  <el-button
-                    :underline="false"
-                    type="text"
-                    size="mini"
-                    @click="queryPushRecord(scope.row)"
-                    >推送记录</el-button
-                  >
-                  <el-button
-                    slot="reference"
-                    icon="el-icon-more"
-                    type="text"
-                    size="mini"
-                  ></el-button>
+                  <el-button :underline="false" type="text" size="mini" @click="queryHistory(scope.row)">历史记录
+                  </el-button>
+                  <el-button :underline="false" type="text" size="mini" @click="queryPushRecord(scope.row)">推送记录
+                  </el-button>
+                  <el-button slot="reference" icon="el-icon-more" type="text" size="mini"></el-button>
                 </el-popover>
               </template>
             </el-table-column>
           </el-table>
           <div class="page-class">
-            <el-pagination
-              small
-              background
-              @size-change="dynamicSizeChange"
-              @current-change="dynamicCurrentChange"
-              :current-page="dynamicQueryResult.page"
-              :page-sizes="[10, 20, 50]"
-              :page-size="10"
-              layout="total, sizes, prev, pager, next"
-              :total="dynamicQueryResult.totalSize"
-            >
+            <el-pagination small background @size-change="dynamicSizeChange" @current-change="dynamicCurrentChange"
+              :current-page="dynamicQueryResult.page" :page-sizes="[10, 20, 50]" :page-size="10"
+              layout="total, sizes, prev, pager, next" :total="dynamicQueryResult.totalSize">
             </el-pagination>
           </div>
         </el-tab-pane>
       </el-tabs>
     </el-card>
     <div>
-      <el-dialog
-        :title="saveFormTitle"
-        :visible.sync="saveDialogVisible"
-        width="30%"
-        :close-on-click-modal="false"
-      >
+      <el-dialog :title="saveFormTitle" :visible.sync="saveDialogVisible" width="30%" :close-on-click-modal="false">
         <el-form :model="saveForm" ref="saveForm" size="mini" :rules="saveFormRules">
           <el-form-item label="key" label-width="60px" prop="key">
-            <el-input
-              v-model="saveForm.key"
-              autocomplete="off"
-              :disabled="saveForm.id != null"
-            ></el-input>
+            <el-input v-model="saveForm.key" :disabled="saveForm.id != null"></el-input>
           </el-form-item>
           <el-form-item label="value" label-width="60px" prop="value">
-            <el-input
-              v-model="saveForm.value"
-              type="textarea"
-              :autosize="{ minRows: 3, maxRows: 6 }"
-              autocomplete="off"
-            ></el-input>
+            <el-input v-model="saveForm.value" type="textarea" :autosize="{ minRows: 3, maxRows: 6 }"></el-input>
           </el-form-item>
           <el-form-item label="注释" label-width="60px">
-            <el-input
-              v-model="saveForm.comment"
-              type="textarea"
-              :autosize="{ minRows: 3, maxRows: 6 }"
-              autocomplete="off"
-            ></el-input>
+            <el-input v-model="saveForm.comment" type="textarea" :autosize="{ minRows: 3, maxRows: 6 }"></el-input>
           </el-form-item>
         </el-form>
         <el-alert v-if="saveForm.id != null" title="注意：版本号只会在value值变更时+1" type="warning"></el-alert>
         <div slot="footer">
-          <el-button @click="saveDialogVisible = false" size="mini"
-            >取消</el-button
-          >
-          <el-button type="primary" @click="saveOrUpdateConfig" size="mini"
-            >确定</el-button
-          >
+          <el-button @click="saveDialogVisible = false" size="mini">取消</el-button>
+          <el-button type="primary" @click="saveOrUpdateConfig" size="mini">确定</el-button>
         </div>
       </el-dialog>
     </div>
 
     <div>
-      <el-dialog
-        :title="historyTitle"
-        :visible.sync="historyDialogVisible"
-        width="55%"
-        :close-on-click-modal="false"
-      >
+      <el-dialog :title="historyTitle" :visible.sync="historyDialogVisible" width="55%" :close-on-click-modal="false">
         <el-table :data="historyQueryResult.data" size="mini" :border="true">
           <el-table-column prop="value" label="值"> </el-table-column>
           <el-table-column prop="version" label="版本" width="50">
           </el-table-column>
           <el-table-column prop="operateType" label="操作类型" width="100">
             <template slot-scope="scope">
-              <el-tag
-                v-if="scope.row.operateType == 'CREATE'"
-                type="success"
-                size="mini"
-                >{{ scope.row.operateType }}</el-tag
-              >
-              <el-tag
-                v-if="scope.row.operateType == 'UPDATE'"
-                type="warning"
-                size="mini"
-                >{{ scope.row.operateType }}</el-tag
-              >
-              <el-tag
-                v-if="scope.row.operateType == 'DELETE'"
-                type="danger"
-                size="mini"
-                >{{ scope.row.operateType }}</el-tag
-              >
+              <el-tag v-if="scope.row.operateType == 'CREATE'" type="success" size="mini">{{ scope.row.operateType }}
+              </el-tag>
+              <el-tag v-if="scope.row.operateType == 'UPDATE'" type="warning" size="mini">{{ scope.row.operateType }}
+              </el-tag>
+              <el-tag v-if="scope.row.operateType == 'DELETE'" type="danger" size="mini">{{ scope.row.operateType }}
+              </el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="operateUser" label="操作人" width="100">
@@ -345,29 +186,17 @@
           </el-table-column>
         </el-table>
         <div class="page-class">
-          <el-pagination
-            small
-            background
-            @size-change="historySizeChange"
-            @current-change="historyCurrentChange"
-            :current-page="historyQueryResult.page"
-            :page-sizes="[10, 20]"
-            :page-size="10"
-            layout="total, prev, pager, next"
-            :total="historyQueryResult.totalSize"
-          >
+          <el-pagination small background @size-change="historySizeChange" @current-change="historyCurrentChange"
+            :current-page="historyQueryResult.page" :page-sizes="[10, 20]" :page-size="10"
+            layout="total, prev, pager, next" :total="historyQueryResult.totalSize">
           </el-pagination>
         </div>
       </el-dialog>
     </div>
 
     <div>
-      <el-dialog
-        :title="pushRecordTitle"
-        :visible.sync="pushRecordDialogVisible"
-        width="55%"
-        :close-on-click-modal="false"
-      >
+      <el-dialog :title="pushRecordTitle" :visible.sync="pushRecordDialogVisible" width="55%"
+        :close-on-click-modal="false">
         <el-table :data="pushRecordQueryResult.data" size="mini" :border="true">
           <el-table-column prop="value" label="值"> </el-table-column>
           <el-table-column prop="version" label="版本" width="50">
@@ -378,41 +207,19 @@
           </el-table-column>
         </el-table>
         <div class="page-class">
-          <el-pagination
-            small
-            background
-            @size-change="pushRecordSizeChange"
-            @current-change="pushRecordCurrentChange"
-            :current-page="pushRecordQueryResult.page"
-            :page-sizes="[10, 20]"
-            :page-size="10"
-            layout="total, prev, pager, next"
-            :total="pushRecordQueryResult.totalSize"
-          >
+          <el-pagination small background @size-change="pushRecordSizeChange" @current-change="pushRecordCurrentChange"
+            :current-page="pushRecordQueryResult.page" :page-sizes="[10, 20]" :page-size="10"
+            layout="total, prev, pager, next" :total="pushRecordQueryResult.totalSize">
           </el-pagination>
         </div>
       </el-dialog>
     </div>
     <div>
-      <el-dialog
-        title="导入配置"
-        :visible.sync="uploadDialogVisible"
-        width="30%"
-        :close-on-click-modal="false"
-        :destroy-on-close="true"
-      >
-        <el-upload
-          ref="upload"
-          :data="{ applicationId: appInfo.id }"
-          :limit="1"
-          accept=".json, .yml, .properties"
-          :before-upload="beforeUpload"
-          :action="uploadUrl"
-          :on-success="importSuccess"
-          drag
-          style="text-align: center"
-          :auto-upload="false"
-        >
+      <el-dialog title="导入配置" :visible.sync="uploadDialogVisible" width="30%" :close-on-click-modal="false"
+        :destroy-on-close="true">
+        <el-upload ref="upload" :data="{ applicationId: appInfo.id }" :limit="1" accept=".json, .yml, .properties"
+          :before-upload="beforeUpload" :action="uploadUrl" :on-success="importSuccess" drag style="text-align: center"
+          :auto-upload="false">
           <i class="el-icon-upload"></i>
           <div class="el-upload__text">将文件拖到此处，或<em>点击导入</em></div>
           <div class="el-upload__tip" slot="tip">
@@ -420,12 +227,8 @@
           </div>
         </el-upload>
         <div slot="footer">
-          <el-button @click="uploadDialogVisible = false" size="mini"
-            >取消</el-button
-          >
-          <el-button type="primary" @click="doImportConfig" size="mini"
-            >确定</el-button
-          >
+          <el-button @click="uploadDialogVisible = false" size="mini">取消</el-button>
+          <el-button type="primary" @click="doImportConfig" size="mini">确定</el-button>
         </div>
       </el-dialog>
     </div>
@@ -652,11 +455,11 @@ export default {
     },
     pushConfig(row) {
       let msg =
-        "确定要推送配置 <strong>[" +
+        "确定要推送配置 <strong>{" +
         row.key +
-        ": " +
+        ": \"" +
         row.value +
-        "]</strong> 吗?";
+        "\"}</strong> 吗?";
       this.$confirm(msg, "提示", {
         dangerouslyUseHTMLString: true,
         confirmButtonText: "确定",
@@ -760,7 +563,7 @@ export default {
         "/application-config/export?applicationId=" +
         this.appInfo.id;
     },
-    beforeUpload(file) {},
+    beforeUpload(file) { },
     doImportConfig() {
       this.$refs.upload.submit();
     },
@@ -783,17 +586,29 @@ export default {
   min-height: 100%;
   height: 100%;
 }
+
 .el-card /deep/ .el-card__header {
   text-align: left;
   padding: 10px 20px;
   font-weight: bold;
   font-size: 14px;
 }
+
 .page-class {
   margin-bottom: 5px;
   text-align: right;
 }
+
 .el-popover .button-popover {
   text-align: center;
+}
+
+.button-dander {
+  color: #f56c6c;
+}
+
+.button-dander :focus,
+.button-dander:hover {
+  color: #f78989;
 }
 </style>

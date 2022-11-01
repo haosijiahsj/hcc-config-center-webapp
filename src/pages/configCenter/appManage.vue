@@ -7,10 +7,7 @@
       <div>
         <el-form :model="queryForm" :inline="true" size="small">
           <el-form-item label="应用名称">
-            <el-input
-              v-model="queryForm.appName"
-              placeholder="应用名称，支持模糊搜索"
-            ></el-input>
+            <el-input v-model="queryForm.appName" placeholder="应用名称，支持模糊搜索"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="queryApp">查询</el-button>
@@ -28,160 +25,85 @@
             <el-button size="mini" @click="saveApp" icon="el-icon-plus">新增</el-button>
           </div>
         </el-row>
-        <el-table
-          v-loading="loading"
-          :data="queryResult.data"
-          size="mini"
-          :border="true"
-        >
+        <el-table v-loading="loading" :data="queryResult.data" size="mini" :border="true">
           <el-table-column prop="appCode" label="应用编码"></el-table-column>
           <el-table-column prop="appName" label="应用名称"></el-table-column>
           <el-table-column prop="secretKey" label="密钥" width="260">
           </el-table-column>
           <el-table-column prop="appStatus" label="状态">
             <template slot-scope="scope">
-              <el-tag
-                v-if="scope.row.appStatus == 'ONLINE'"
-                type="success"
-                size="mini"
-                >{{ scope.row.appStatusDesc }}</el-tag
-              >
-              <el-tag
-                v-if="scope.row.appStatus == 'OFFLINE'"
-                type="danger"
-                size="mini"
-                >{{ scope.row.appStatusDesc }}</el-tag
-              >
-              <el-tag
-                v-if="scope.row.appStatus == 'NOT_ONLINE'"
-                type="info"
-                size="mini"
-                >{{ scope.row.appStatusDesc }}</el-tag
-              >
+              <el-tag v-if="scope.row.appStatus == 'ONLINE'" type="success" size="mini">{{ scope.row.appStatusDesc }}
+              </el-tag>
+              <el-tag v-if="scope.row.appStatus == 'OFFLINE'" type="danger" size="mini">{{ scope.row.appStatusDesc }}
+              </el-tag>
+              <el-tag v-if="scope.row.appStatus == 'NOT_ONLINE'" type="info" size="mini">{{ scope.row.appStatusDesc }}
+              </el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="appMode" width="120" label="模式">
             <template slot-scope="scope">
-              <el-tag
-                v-if="scope.row.appMode == 'LONG_CONNECT'"
-                type="success"
-                size="mini"
-                >{{ scope.row.appModeDesc }}</el-tag
-              >
+              <el-tag v-if="scope.row.appMode == 'LONG_CONNECT'" type="success" size="mini">{{ scope.row.appModeDesc }}
+              </el-tag>
               <el-tag v-if="scope.row.appMode == 'LONG_POLLING'" size="mini">{{
-                scope.row.appModeDesc
+                  scope.row.appModeDesc
               }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="owner" label="负责人"> </el-table-column>
-          <el-table-column
-            prop="createTime"
-            width="140"
-            label="创建时间"
-          ></el-table-column>
-          <el-table-column
-            prop="updateTime"
-            width="140"
-            label="更新时间"
-          ></el-table-column>
+          <el-table-column prop="createTime" width="140" label="创建时间"></el-table-column>
+          <el-table-column prop="updateTime" width="140" label="更新时间"></el-table-column>
           <el-table-column prop="operate" width="150" label="操作">
             <template slot-scope="scope">
-              <el-button
-                v-if="
-                  scope.row.appStatus == 'NOT_ONLINE' ||
-                  scope.row.appStatus == 'OFFLINE'
-                "
-                type="text"
-                @click="editApp(scope.row)"
-                size="mini"
-                >编辑</el-button
-              >
-              <el-button
-                v-if="
-                  scope.row.appStatus == 'NOT_ONLINE' ||
-                  scope.row.appStatus == 'OFFLINE'
-                "
-                type="text"
-                @click="online(scope.row)"
-                size="mini"
-                >上线</el-button
-              >
-              <el-button
-                v-if="scope.row.appStatus == 'ONLINE'"
-                type="text"
-                @click="offline(scope.row)"
-                size="mini"
-                >下线</el-button
-              >
-              <el-button
-                v-if="
-                  scope.row.appStatus == 'NOT_ONLINE' ||
-                  scope.row.appStatus == 'OFFLINE'
-                "
-                :underline="false"
-                type="text"
-                size="mini"
-                @click="deleteApp(scope.row)"
-                >删除</el-button
-              >
+              <el-button v-if="
+                scope.row.appStatus == 'NOT_ONLINE' ||
+                scope.row.appStatus == 'OFFLINE'
+              " type="text" @click="editApp(scope.row)" size="mini">编辑</el-button>
+              <el-button v-if="
+                scope.row.appStatus == 'NOT_ONLINE' ||
+                scope.row.appStatus == 'OFFLINE'
+              " type="text" @click="online(scope.row)" size="mini">上线</el-button>
+              <el-button v-if="scope.row.appStatus == 'ONLINE'" type="text" @click="offline(scope.row)" size="mini">下线
+              </el-button>
+              <el-button v-if="
+                scope.row.appStatus == 'NOT_ONLINE' ||
+                scope.row.appStatus == 'OFFLINE'
+              " :underline="false" type="text" size="mini" class="button-dander" @click="deleteApp(scope.row)">删除
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
         <div class="page-class">
-          <el-pagination
-            small
-            background
-            @size-change="sizeChange"
-            @current-change="currentChange"
-            :current-page="queryResult.page"
-            :page-sizes="[10, 20, 50]"
-            :page-size="queryResult.size"
-            layout="total, sizes, prev, pager, next"
-            :total="queryResult.totalSize"
-          >
+          <el-pagination small background @size-change="sizeChange" @current-change="currentChange"
+            :current-page="queryResult.page" :page-sizes="[10, 20, 50]" :page-size="queryResult.size"
+            layout="total, sizes, prev, pager, next" :total="queryResult.totalSize">
           </el-pagination>
         </div>
       </el-card>
     </div>
     <div>
-      <el-dialog
-        :title="saveFormTitle"
-        :visible.sync="saveDialogVisible"
-        width="30%"
-        :close-on-click-modal="false"
-      >
+      <el-dialog :title="saveFormTitle" :visible.sync="saveDialogVisible" width="30%" :close-on-click-modal="false">
         <el-form :model="saveForm" ref="saveForm" size="mini" :rules="saveFormRules">
           <el-form-item label="应用编码" label-width="80px" prop="appCode">
-            <el-input
-              v-model="saveForm.appCode"
-              autocomplete="off"
-              :disabled="saveForm.id && saveForm.appStatus != 'NOT_ONLINE'"
-            ></el-input>
+            <el-input v-model="saveForm.appCode" :disabled="saveForm.id && saveForm.appStatus != 'NOT_ONLINE'">
+            </el-input>
           </el-form-item>
           <el-form-item label="应用名称" label-width="80px" prop="appName">
-            <el-input v-model="saveForm.appName" autocomplete="off"></el-input>
+            <el-input v-model="saveForm.appName"></el-input>
           </el-form-item>
           <el-form-item label="应用模式" label-width="80px">
-            <el-radio-group
-              v-model="saveForm.appMode"
-              :disabled="saveForm.id && saveForm.appStatus != 'NOT_ONLINE'"
-              size="small"
-            >
+            <el-radio-group v-model="saveForm.appMode" :disabled="saveForm.id && saveForm.appStatus != 'NOT_ONLINE'"
+              size="small">
               <el-radio label="LONG_CONNECT" border>长连接</el-radio>
               <el-radio label="LONG_POLLING" border>长轮询</el-radio>
             </el-radio-group>
           </el-form-item>
           <el-form-item label="负责人" label-width="80px">
-            <el-input v-model="saveForm.owner" autocomplete="off"></el-input>
+            <el-input v-model="saveForm.owner"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer">
-          <el-button @click="saveDialogVisible = false" size="mini"
-            >取消</el-button
-          >
-          <el-button type="primary" @click="saveOrUpdateApp" size="mini"
-            >确定</el-button
-          >
+          <el-button @click="saveDialogVisible = false" size="mini">取消</el-button>
+          <el-button type="primary" @click="saveOrUpdateApp" size="mini">确定</el-button>
         </div>
       </el-dialog>
     </div>
@@ -221,7 +143,7 @@ export default {
       },
     };
   },
-  mounted() {},
+  mounted() { },
   methods: {
     queryApp() {
       let that = this;
@@ -343,13 +265,24 @@ export default {
   min-height: 100%;
   height: 100%;
 }
+
 .el-card /deep/ .el-card__header {
   padding: 10px 20px;
   font-weight: bold;
   font-size: 14px;
 }
+
 .page-class {
   margin-bottom: 5px;
   text-align: right;
+}
+
+.button-dander {
+  color: #f56c6c;
+}
+
+.button-dander :focus,
+.button-dander:hover {
+  color: #f78989;
 }
 </style>
