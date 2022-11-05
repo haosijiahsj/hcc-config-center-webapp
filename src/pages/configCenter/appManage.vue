@@ -81,7 +81,7 @@
       </el-card>
     </div>
     <div>
-      <el-dialog :title="saveFormTitle" :visible.sync="saveDialogVisible" width="30%" :close-on-click-modal="false">
+      <el-dialog :title="saveFormTitle" :visible.sync="saveDialogVisible" width="30%" :close-on-click-modal="false" :destroy-on-close="true">
         <el-form :model="saveForm" ref="saveForm" size="mini" :rules="saveFormRules">
           <el-form-item label="应用编码" label-width="80px" prop="appCode">
             <el-input v-model="saveForm.appCode" :disabled="saveForm.id && saveForm.appStatus != 'NOT_ONLINE'">

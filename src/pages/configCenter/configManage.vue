@@ -144,7 +144,7 @@
       </el-tabs>
     </el-card>
     <div>
-      <el-dialog :title="saveFormTitle" :visible.sync="saveDialogVisible" width="30%" :close-on-click-modal="false">
+      <el-dialog :title="saveFormTitle" :visible.sync="saveDialogVisible" width="30%" :close-on-click-modal="false" :destroy-on-close="true">
         <el-form :model="saveForm" ref="saveForm" size="mini" :rules="saveFormRules">
           <el-form-item label="key" label-width="60px" prop="key">
             <el-input v-model="saveForm.key" :disabled="saveForm.id != null"></el-input>
