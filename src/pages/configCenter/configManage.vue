@@ -296,7 +296,7 @@ export default {
     query() {
       let that = this;
       if (!this.queryForm.applicationId) {
-        this.$message.error("请先选择应用！");
+        this.$message.warning("请先选择应用！");
         return;
       }
       // 查询app信息
@@ -318,7 +318,7 @@ export default {
     },
     saveConfig() {
       if (!this.appInfo.id) {
-        this.$message.error("请先查询应用！");
+        this.$message.warning("请先查询应用！");
         return;
       }
       this.saveForm = {
@@ -467,14 +467,14 @@ export default {
     },
     importConfig() {
       if (!this.appInfo.id) {
-        this.$message.error("请先查询应用！");
+        this.$message.warning("请先查询应用！");
         return;
       }
       this.uploadDialogVisible = true;
     },
     exportConfig() {
       if (!this.appInfo.id) {
-        this.$message.error("请先查询应用！");
+        this.$message.warning("请先查询应用！");
         return;
       }
       window.location.href =
