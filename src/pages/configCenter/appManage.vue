@@ -93,12 +93,8 @@
           <el-form-item label="应用模式" label-width="80px">
             <el-radio-group v-model="saveForm.appMode" :disabled="saveForm.id && saveForm.appStatus != 'NOT_ONLINE'"
               size="small">
-              <el-tooltip content="基于netty的tcp连接，配置变更后需要主动推送至客户端" placement="top">
-                <el-radio label="LONG_CONNECT" border>长连接</el-radio>
-              </el-tooltip>
-              <el-tooltip content="基于http的连接，建立连接后一段时间内hold住连接，等待配置变更，配置变更后自动推送至客户端" placement="top">
-                <el-radio label="LONG_POLLING" border>长轮询</el-radio>
-              </el-tooltip>
+              <el-radio label="LONG_CONNECT" border>长连接</el-radio>
+              <el-radio label="LONG_POLLING" border>长轮询</el-radio>
             </el-radio-group>
           </el-form-item>
           <el-form-item label="负责人" label-width="80px">
