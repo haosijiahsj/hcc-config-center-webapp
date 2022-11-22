@@ -64,84 +64,50 @@
       <div slot="header">
         <span>配置信息</span>
         <span style="float: right">
+          <el-button type="text" size="small" icon="el-icon-plus" @click="saveConfig">新增</el-button>
           <el-button type="text" size="small" icon="el-icon-upload" @click="importConfig">导入</el-button>
           <el-button type="text" size="small" icon="el-icon-download" @click="exportConfig">导出</el-button>
         </span>
       </div>
-      <el-tabs v-model="activeName" @tab-click="tabClick">
-        <el-tab-pane label="静态配置" name="staticConfig">
-          <div style="text-align: right">
-            <el-button size="mini" @click="saveConfig" icon="el-icon-plus">新增</el-button>
-          </div>
-          <el-table v-loading="staticLoading" :data="staticQueryResult.data" size="mini" :border="true">
-            <el-table-column prop="key" label="配置key" width="200">
-            </el-table-column>
-            <el-table-column prop="value" label="配置值"> </el-table-column>
-            <el-table-column prop="comment" label="注释"> </el-table-column>
-            <el-table-column prop="version" label="版本" width="50">
-            </el-table-column>
-            <el-table-column prop="createTime" label="创建时间">
-            </el-table-column>
-            <el-table-column prop="updateTime" label="更新时间">
-            </el-table-column>
-            <el-table-column prop="operate" width="150" label="操作">
-              <template slot-scope="scope">
-                <el-button type="text" @click="editConfig(scope.row)" size="mini">编辑</el-button>
-                <el-button :underline="false" type="text" size="mini" class="button-dander"
-                  @click="deleteConfig(scope.row)">删除</el-button>
-                <el-button :underline="false" type="text" size="mini" @click="queryHistory(scope.row)">历史记录</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-          <div class="page-class">
-            <el-pagination small background @size-change="staticSizeChange" @current-change="staticCurrentChange"
-              :current-page="staticQueryResult.page" :page-sizes="[10, 20, 50]" :page-size="10"
-              layout="total, sizes, prev, pager, next" :total="staticQueryResult.totalSize">
-            </el-pagination>
-          </div>
-        </el-tab-pane>
-        <el-tab-pane label="动态配置" name="dynamicConfig">
-          <div style="text-align: right">
-            <el-button size="mini" @click="saveConfig" icon="el-icon-plus">新增</el-button>
-          </div>
-          <el-table v-loading="dynamicLoading" :data="dynamicQueryResult.data" size="mini" :border="true">
-            <el-table-column prop="key" label="配置key"> </el-table-column>
-            <el-table-column prop="value" label="配置值"> </el-table-column>
-            <el-table-column prop="comment" label="注释"> </el-table-column>
-            <el-table-column prop="version" label="版本" width="50">
-            </el-table-column>
-            <el-table-column prop="createTime" label="创建时间">
-            </el-table-column>
-            <el-table-column prop="updateTime" label="更新时间">
-            </el-table-column>
-            <el-table-column prop="operate" label="操作" width="160">
-              <template slot-scope="scope">
-                <el-button type="text" @click="editConfig(scope.row)" size="mini">编辑</el-button>
-                <el-button v-if="
-                  appInfo.appStatus == 'ONLINE' &&
-                  appInfo.appMode == 'LONG_CONNECT'
-                " type="text" @click="pushConfig(scope.row)" size="mini">推送</el-button>
-                <el-button :underline="false" type="text" size="mini" class="button-dander"
-                  @click="deleteConfig(scope.row)">删除</el-button>
-                &nbsp;&nbsp;
-                <el-popover placement="top" trigger="hover" popper-class="button-popover">
-                  <el-button :underline="false" type="text" size="mini" @click="queryHistory(scope.row)">历史记录
-                  </el-button>
-                  <el-button :underline="false" type="text" size="mini" @click="queryPushRecord(scope.row)">推送记录
-                  </el-button>
-                  <el-button slot="reference" icon="el-icon-more" type="text" size="mini"></el-button>
-                </el-popover>
-              </template>
-            </el-table-column>
-          </el-table>
-          <div class="page-class">
-            <el-pagination small background @size-change="dynamicSizeChange" @current-change="dynamicCurrentChange"
-              :current-page="dynamicQueryResult.page" :page-sizes="[10, 20, 50]" :page-size="10"
-              layout="total, sizes, prev, pager, next" :total="dynamicQueryResult.totalSize">
-            </el-pagination>
-          </div>
-        </el-tab-pane>
-      </el-tabs>
+      <div style="text-align: right">
+      </div>
+      <el-table v-loading="loading" :data="configQueryResult.data" size="mini" :border="true">
+        <el-table-column type="selection" width="50"> </el-table-column>
+        <el-table-column prop="key" label="配置key"> </el-table-column>
+        <el-table-column prop="value" label="配置值"> </el-table-column>
+        <el-table-column prop="comment" label="注释"> </el-table-column>
+        <el-table-column prop="version" label="版本" width="50">
+        </el-table-column>
+        <el-table-column prop="createTime" label="创建时间">
+        </el-table-column>
+        <el-table-column prop="updateTime" label="更新时间">
+        </el-table-column>
+        <el-table-column prop="operate" label="操作" width="160">
+          <template slot-scope="scope">
+            <el-button type="text" @click="editConfig(scope.row)" size="mini">编辑</el-button>
+            <el-button v-if="
+              appInfo.appStatus == 'ONLINE' &&
+              appInfo.appMode == 'LONG_CONNECT'
+            " type="text" @click="pushConfig(scope.row)" size="mini">推送</el-button>
+            <el-button :underline="false" type="text" size="mini" class="button-dander"
+              @click="deleteConfig(scope.row)">删除</el-button>
+            &nbsp;&nbsp;
+            <el-popover placement="top" trigger="hover" popper-class="button-popover">
+              <el-button :underline="false" type="text" size="mini" @click="queryHistory(scope.row)">历史记录
+              </el-button>
+              <el-button :underline="false" type="text" size="mini" @click="queryPushRecord(scope.row)">推送记录
+              </el-button>
+              <el-button slot="reference" icon="el-icon-more" type="text" size="mini"></el-button>
+            </el-popover>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="page-class">
+        <el-pagination small background @size-change="sizeChange" @current-change="currentChange"
+          :current-page="configQueryResult.page" :page-sizes="[10, 20, 50]" :page-size="10"
+          layout="total, sizes, prev, pager, next" :total="configQueryResult.totalSize">
+        </el-pagination>
+      </div>
     </el-card>
     <div>
       <el-dialog :title="saveFormTitle" :visible.sync="saveDialogVisible" width="30%" :close-on-click-modal="false" :destroy-on-close="true">
@@ -240,11 +206,10 @@ import ajax from "~/api/ajax";
 export default {
   data() {
     return {
-      staticLoading: false,
-      dynamicLoading: false,
+      loading: false,
       activeName: "staticConfig",
       saveDialogVisible: false,
-      saveFormTitle: "新增静态配置",
+      saveFormTitle: "新增配置",
       allAppInfos: [],
       appInfo: {
         id: null,
@@ -259,8 +224,7 @@ export default {
         applicationId: null,
         key: null,
         value: null,
-        comment: null,
-        dynamic: false,
+        comment: null
       },
       saveFormRules: {
         key: [{ required: true, message: "配置key必填" }],
@@ -272,16 +236,11 @@ export default {
         page: 1,
         size: 10,
       },
-      staticQueryPage: {
+      configQueryPage: {
         page: 1,
         size: 10,
       },
-      dynamicQueryPage: {
-        page: 1,
-        size: 10,
-      },
-      staticQueryResult: {},
-      dynamicQueryResult: {},
+      configQueryResult: {},
       historyTitle: "历史记录",
       historyDialogVisible: false,
       historyQueryResult: {},
@@ -314,47 +273,25 @@ export default {
   methods: {
     queryAppConfig() {
       let that = this;
-      if (that.activeName == "staticConfig") {
-        that.queryForm.dynamic = false;
-        that.queryForm.page = that.staticQueryPage.page;
-        that.queryForm.size = that.staticQueryPage.size;
-      } else {
-        that.queryForm.dynamic = true;
-        that.queryForm.page = that.dynamicQueryPage.page;
-        that.queryForm.size = that.dynamicQueryPage.size;
-      }
+      that.loading = true;
+      that.queryForm.page = that.configQueryPage.page;
+      that.queryForm.size = that.configQueryPage.size;
       ajax.post("/application-config/page", that.queryForm).then((rs) => {
         if (rs.success) {
-          if (that.queryForm.dynamic) {
-            that.dynamicQueryResult = rs.data;
-          } else {
-            that.staticQueryResult = rs.data;
-          }
+          that.configQueryResult = rs.data;
         } else {
           this.$message.error("查询失败！请稍后再试！");
         }
+        that.loading = false;
       });
     },
-    staticSizeChange(size) {
-      this.staticQueryPage.size = size;
+    sizeChange(size) {
+      this.configQueryPage.size = size;
       this.queryAppConfig();
     },
-    staticCurrentChange(current) {
-      this.staticQueryPage.page = current;
+    currentChange(current) {
+      this.configQueryPage.page = current;
       this.queryAppConfig();
-    },
-    dynamicSizeChange(size) {
-      this.dynamicQueryPage.size = size;
-      this.queryAppConfig();
-    },
-    dynamicCurrentChange(current) {
-      this.dynamicQueryPage.page = current;
-      this.queryAppConfig();
-    },
-    tabClick() {
-      if (this.queryForm.applicationId && this.appInfo.appCode) {
-        this.queryAppConfig();
-      }
     },
     query() {
       let that = this;
@@ -377,11 +314,7 @@ export default {
       if (!queryAppSuccess) {
         return;
       }
-      if (that.activeName == "staticConfig") {
-        that.queryAppConfig();
-      } else {
-        that.queryAppConfig();
-      }
+      that.queryAppConfig();
     },
     saveConfig() {
       if (!this.appInfo.id) {
@@ -394,21 +327,11 @@ export default {
         value: null,
         comment: null
       };
-      if (this.activeName == "staticConfig") {
-        this.saveFormTitle = "新增静态配置";
-      } else {
-        this.saveFormTitle = "新增动态配置";
-      }
       this.saveDialogVisible = true;
     },
     saveOrUpdateConfig() {
       let that = this;
       that.saveForm.applicationId = that.appInfo.id;
-      if (that.activeName == "staticConfig") {
-        that.saveForm.dynamic = false;
-      } else {
-        that.saveForm.dynamic = true;
-      }
       this.$refs['saveForm'].validate((valid) => {
         if (valid) {
           ajax.post("/application-config/save", that.saveForm).then((rs) => {
@@ -427,11 +350,7 @@ export default {
     },
     editConfig(row) {
       this.saveForm = row;
-      if (this.activeName == "staticConfig") {
-        this.saveFormTitle = "编辑静态配置";
-      } else {
-        this.saveFormTitle = "编辑动态配置";
-      }
+      this.saveFormTitle = "编辑配置";
       this.saveDialogVisible = true;
     },
     deleteConfig(row) {
