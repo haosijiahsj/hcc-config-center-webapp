@@ -189,7 +189,7 @@
           <i class="el-icon-upload"></i>
           <div class="el-upload__text">将文件拖到此处，或<em>点击导入</em></div>
           <div class="el-upload__tip" slot="tip">
-            支持yml、properties、json格式，yml、properties将处理为静态配置
+            支持yml、properties、json格式
           </div>
         </el-upload>
         <div slot="footer">
